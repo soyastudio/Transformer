@@ -1,10 +1,10 @@
 package soya.framework.transform.transformers;
 
 import com.bazaarvoice.jolt.*;
-import soya.framework.transform.TemplateBased;
+import soya.framework.transform.UrlTemplateBased;
 import soya.framework.transform.TransformerException;
 
-public class JoltTransformer extends JsonDataTransformer implements TemplateBased {
+public class JoltTransformer extends JsonDataTransformer implements UrlTemplateBased {
 
     private final String url;
     private JoltTransformType transformDsl = JoltTransformType.Chainr;

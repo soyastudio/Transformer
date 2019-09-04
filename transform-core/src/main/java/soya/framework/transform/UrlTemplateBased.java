@@ -1,5 +1,5 @@
 package soya.framework.transform;
 
-public interface TemplateBased {
+public interface UrlTemplateBased {
     String getUrl();
 }

@@ -2,7 +2,7 @@ package soya.framework.transform.transformers;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import soya.framework.transform.TemplateBased;
+import soya.framework.transform.UrlTemplateBased;
 import soya.framework.transform.TransformerException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 
-public class XsltTransformer implements XmlDataTransformer, TemplateBased {
+public class XsltTransformer implements XmlDataTransformer, UrlTemplateBased {
     private final String url;
 
     protected TransformerFactory transformerFactory;

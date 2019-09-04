@@ -5,13 +5,13 @@ import com.google.gson.JsonParser;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import soya.framework.commons.json.GsonUtils;
-import soya.framework.transform.TemplateBased;
+import soya.framework.transform.UrlTemplateBased;
 import soya.framework.transform.TransformerException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class MustacheTransformer extends JsonDataTransformer implements TemplateBased {
+public class MustacheTransformer extends JsonDataTransformer implements UrlTemplateBased {
     private final String url;
     private Template template;
 
