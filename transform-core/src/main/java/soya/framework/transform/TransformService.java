@@ -1,15 +1,14 @@
 package soya.framework.transform;
 
-public abstract class TransformService {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-    protected static TransformService INSTANCE;
+public interface TransformService {
+    TransformContext context();
 
-    protected TransformService() {
-    }
+    String transform(String data, String expression) throws TransformerException;
 
-    public static TransformService getInstance() {
-        return INSTANCE;
-    }
+    Future<String> transform(String data, String expression, ExecutorService executorService) throws TransformerException;
 
-    public abstract <T> T transform(String jsonData, String sourceType, Class<T> targetType, Object caller) throws Exception;
+
 }

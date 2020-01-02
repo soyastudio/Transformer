@@ -3,21 +3,20 @@ package soya.framework.transform.application.api;
 import io.swagger.annotations.Api;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Component
-@Path("/transformer")
+@Path("/transform")
 @Api(value = "Transform Service")
 public class TransformerResource {
 
     @POST
-    @Path("/jolt")
+    @Path("/chain")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response jolt() {
+    public Response transform(@HeaderParam("chain") String chain, String json) {
         StringBuilder builder = new StringBuilder();
         builder.append("JOLT").append("\n");
         return Response.status(200).entity(builder.toString()).build();
