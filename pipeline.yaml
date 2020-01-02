@@ -1,0 +1,3 @@
+extractor:
+  function: api_paginate(@url, @offset, @)
+  http: paginate(OFFSET, 100)

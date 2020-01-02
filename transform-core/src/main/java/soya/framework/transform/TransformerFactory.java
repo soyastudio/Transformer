@@ -14,7 +14,7 @@ public class TransformerFactory extends Transformers {
 
     public Transformer create(String expression) {
         TransformerExpression exp = TransformerExpression.parse(expression);
-        return getTransformerBuilder(exp.getFunction()).create(exp.getArguments());
+        return getTransformerBuilder(exp.getFunction()).create(exp.getArguments(), null);
     }
 
     public static TransformerFactory getInstance() {

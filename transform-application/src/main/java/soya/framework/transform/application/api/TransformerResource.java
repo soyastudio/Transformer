@@ -13,6 +13,17 @@ import javax.ws.rs.core.Response;
 public class TransformerResource {
 
     @POST
+    @Path("/evaluate")
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response evaluate(@HeaderParam("chain") String chain, String json) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("JOLT").append("\n");
+        return Response.status(200).entity(builder.toString()).build();
+    }
+
+
+    @POST
     @Path("/chain")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
