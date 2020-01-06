@@ -2,6 +2,8 @@ package soya.framework.transform.evaluation;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.ClassPath;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import soya.framework.transform.TransformerFactory;
 
 import java.io.IOException;
@@ -29,6 +31,15 @@ public class Evaluators {
         });
 
         builders = ImmutableMap.copyOf(map);
+    }
+
+    public static Evaluator create(EvaluateFunction function, EvaluationContext context) {
+        return builders.get(function.getName()).build(function.getArguments(), context);
+    }
+
+    public static String toJson(EvaluateTreeNode... nodes) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(nodes);
     }
 
     private static EvaluatorBuilder newInstance(Class<?> clazz) throws EvaluatorBuildException {

@@ -25,7 +25,13 @@ public class EvaluateEngine extends Evaluators {
     }
 
     public String evaluate(String data, String expression) {
-        return data;
+        String result = data;
+        EvaluateFunction[] functions = EvaluateFunction.toFunctions(expression);
+        for(EvaluateFunction function: functions) {
+            result = create(function, context).evaluate(result);
+        }
+
+        return result;
     }
 
     public static EvaluateEngine getInstance() {
