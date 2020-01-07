@@ -1,5 +1,8 @@
 package soya.framework.transform.evaluation;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,6 +42,23 @@ public class EvaluateEngine extends Evaluators {
     }
 
     static class DefaultEvaluateContext implements EvaluationContext {
+        private Properties configuration;
 
+        public DefaultEvaluateContext() {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if(classLoader == null) {
+                classLoader = EvaluateEngine.class.getClassLoader();
+            }
+
+            configuration = new Properties();
+            InputStream inputStream = classLoader.getResourceAsStream("settler-config.properties");
+            if(inputStream != null) {
+                try {
+                    configuration.load(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

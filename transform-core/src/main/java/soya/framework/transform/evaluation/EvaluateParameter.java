@@ -1,7 +1,7 @@
 package soya.framework.transform.evaluation;
 
 public final class EvaluateParameter implements EvaluateTreeNode {
-    private final EvaluateTreeNodeType type = EvaluateTreeNodeType.VALUE;
+    private final EvaluateTreeNodeType type = EvaluateTreeNodeType.ASSIGNMENT;
     private final String value;
 
     protected EvaluateParameter(String value) {
@@ -23,5 +23,13 @@ public final class EvaluateParameter implements EvaluateTreeNode {
 
     public boolean getBoolean(EvaluationContext context) {
         return Boolean.parseBoolean(getStringValue(context));
+    }
+
+    public int getInteger(EvaluationContext context) {
+        return Integer.parseInt(getStringValue(context));
+    }
+
+    public static int intValue(EvaluateTreeNode node, EvaluationContext context) {
+        return ((EvaluateParameter)node).getInteger(context);
     }
 }
