@@ -123,11 +123,13 @@
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger-annotations-version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-compat-spec-parser</artifactId>
                 <version>${swagger-parser-version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-core</artifactId>
@@ -146,9 +148,13 @@
 
     <modules>
         <module>transform-commons</module>
+        <module>transform-schema</module>
+
         <module>transform-core</module>
         <module>transform-avro</module>
         <module>transform-application</module>
+
+        <module>transform-commandlines</module>
     </modules>
 
 </project>
