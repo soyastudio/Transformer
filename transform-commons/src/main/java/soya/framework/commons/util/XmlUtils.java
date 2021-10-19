@@ -1,11 +1,10 @@
-package soya.framework.transform.schema.util;
+package soya.framework.commons.util;
 
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XmlUtils {
-
 
     public static String toXmlString(Node node) {
         StringBuilder builder = new StringBuilder();

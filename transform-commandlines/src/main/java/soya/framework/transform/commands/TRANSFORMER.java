@@ -16,6 +16,7 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.impl.xsd2inst.SampleXmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import soya.framework.commons.cli.CommandLines;
 import soya.framework.transform.schema.avro.AvroUtils;
 import soya.framework.transform.schema.avro.SampleAvroGenerator;
 import soya.framework.transform.schema.converter.XmlToAvro;

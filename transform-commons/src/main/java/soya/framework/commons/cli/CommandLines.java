@@ -1,4 +1,4 @@
-package soya.framework.transform.commands;
+package soya.framework.commons.cli;
 
 import com.google.gson.*;
 import org.apache.commons.cli.*;
@@ -193,7 +193,7 @@ public abstract class CommandLines {
 
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Command {
+    public @interface Command {
         String desc() default "";
 
         Opt[] options() default {};
@@ -203,7 +203,7 @@ public abstract class CommandLines {
 
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Opt {
+    public @interface Opt {
         String option();
 
         boolean required() default false;

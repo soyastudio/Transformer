@@ -1,4 +1,4 @@
-package soya.framework.transform.schema.util;
+package soya.framework.commons.util;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

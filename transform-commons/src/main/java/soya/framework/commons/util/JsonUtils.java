@@ -1,4 +1,4 @@
-package soya.framework.transform.schema.util;
+package soya.framework.commons.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
