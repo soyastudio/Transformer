@@ -1,0 +1,7 @@
+server:
+  port: 8383
+
+spring:
+  jersey:
+    type: servlet
+    load-on-startup: 1

@@ -16,21 +16,26 @@
         <springframework.boot.version>2.2.2.RELEASE</springframework.boot.version>
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
-        <commons-beanutils-version>1.9.4</commons-beanutils-version>
         <commons-lang3-version>3.9</commons-lang3-version>
         <commons-io-version>2.6</commons-io-version>
+        <commons-beanutils-version>1.9.4</commons-beanutils-version>
         <commons-cli-version>1.4</commons-cli-version>
 
         <apache.poi.version>4.1.2</apache.poi.version>
 
+        <google.gson.version>2.8.8</google.gson.version>
         <google.guava.version>27.0.1-jre</google.guava.version>
         <google.guice.version>4.2.2</google.guice.version>
         <google.findbugs.version>3.0.0</google.findbugs.version>
+
         <reflections.version>0.9.11</reflections.version>
 
         <avro.version>1.9.1</avro.version>
 
+        <jayway.jsonpath.version>2.6.0</jayway.jsonpath.version>
         <jolt.version>0.1.1</jolt.version>
+
+        <jmustache.vsersion>1.15</jmustache.vsersion>
 
         <swagger-annotations-version>1.5.21</swagger-annotations-version>
         <swagger-parser-version>1.0.33</swagger-parser-version>
@@ -54,13 +59,11 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${springframework.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3-version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
@@ -85,9 +88,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3-version}</version>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${google.gson.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
@@ -172,6 +175,12 @@
                 <version>${joda-money.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${jayway.jsonpath.version}</version>
+            </dependency>
+
             <!-- jolt -->
             <dependency>
                 <groupId>com.bazaarvoice.jolt</groupId>
@@ -189,6 +198,12 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger-annotations-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.samskivert</groupId>
+                <artifactId>jmustache</artifactId>
+                <version>${jmustache.vsersion}</version>
             </dependency>
 
             <dependency>

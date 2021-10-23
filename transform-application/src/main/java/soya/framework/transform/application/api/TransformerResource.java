@@ -36,7 +36,6 @@ public class TransformerResource {
         return Response.status(200).entity(engine.evaluate(json, expression)).build();
     }
 
-
     @POST
     @Path("/chain")
     @Consumes(MediaType.APPLICATION_JSON)

@@ -1,0 +1,1 @@
+C:/Users/qwen002/IBM/IIBT10/workspace/APPDEV_ESED1_SRC_TRUNK/esed1_src/CMM_dev/BOD/GetAirMilePoints.xsd
