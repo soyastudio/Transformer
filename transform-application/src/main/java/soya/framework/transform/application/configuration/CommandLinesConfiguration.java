@@ -3,6 +3,7 @@ package soya.framework.transform.application.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.util.PropertiesUtils;
 import soya.framework.transform.schema.SchemaCommands;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class CommandLinesConfiguration {
         Properties properties = new Properties();
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("commandlines-configuration.properties");
         properties.load(inputStream);
+        PropertiesUtils.compile(properties);
 
         return CommandLines.configure(SchemaCommands.class, properties);
     }

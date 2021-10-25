@@ -19,6 +19,7 @@
         <commons-lang3-version>3.9</commons-lang3-version>
         <commons-io-version>2.6</commons-io-version>
         <commons-beanutils-version>1.9.4</commons-beanutils-version>
+        <commons-codec-version>1.15</commons-codec-version>
         <commons-cli-version>1.4</commons-cli-version>
 
         <apache.poi.version>4.1.2</apache.poi.version>
@@ -86,6 +87,14 @@
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io-version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec-version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -239,6 +248,7 @@
         <module>transform-application</module>
 
         <module>transform-commandlines</module>
+        <module>transform-codegen-iib</module>
     </modules>
 
 </project>

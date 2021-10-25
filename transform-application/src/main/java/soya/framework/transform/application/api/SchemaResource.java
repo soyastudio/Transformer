@@ -27,10 +27,10 @@ public class SchemaResource {
             String token = v;
             if(token.toLowerCase().endsWith(".xsd")) {
                 if(token.startsWith("/")) {
-                    token = properties.getProperty("cmm.dir") + token;
+                    token = properties.getProperty("workspace.cmm.dir") + token;
 
                 } else {
-                    token = properties.getProperty("cmm.dir") + "/" + token;
+                    token = properties.getProperty("workspace.cmm.dir") + "/" + token;
                 }
             }
 
@@ -38,14 +38,14 @@ public class SchemaResource {
         }
     };
 
-
     @POST
     @Path("/json")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response execute(@HeaderParam("cmd") String cmd, String msg) {
-
         try {
+
+
             return Response.ok(CommandLines.execute(cmd, SchemaCommands.class, evaluator)).build();
 
         } catch (Exception e) {
