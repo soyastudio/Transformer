@@ -5,12 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import soya.framework.transform.schema.Annotatable;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public abstract class Feature<T> implements Annotatable<T> {
 
     private static Gson gson = new Gson();
 
     private final T origin;
-    protected JsonObject annotations = new JsonObject();
+    protected Map<String, Object> annotations = new ConcurrentHashMap<>();
 
     protected Feature(T origin) {
         this.origin = origin;
@@ -25,7 +28,7 @@ public abstract class Feature<T> implements Annotatable<T> {
         if (annotation == null) {
             annotations.remove(namespace);
         } else {
-            annotations.add(namespace, gson.toJsonTree(annotation));
+            annotations.put(namespace, annotation);
         }
     }
 
@@ -36,11 +39,12 @@ public abstract class Feature<T> implements Annotatable<T> {
 
     @Override
     public <A> A getAnnotation(String namespace, Class<A> annotationType) {
-        JsonElement v = annotations.get(namespace);
-        if(v == null) {
+        if(!annotations.containsKey(namespace)) {
             return null;
         }
 
-        return gson.fromJson(v, annotationType);
+        Object value = annotations.get(namespace);
+
+        return (A) value;
     }
 }

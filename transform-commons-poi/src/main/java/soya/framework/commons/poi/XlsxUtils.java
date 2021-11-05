@@ -84,7 +84,9 @@ public class XlsxUtils {
                         }
 
                         Cell cell = currentRow.getCell(columnIndex[k]);
-                        line.put(columnNames[k], cell.getStringCellValue());
+                        if(cell != null) {
+                            line.put(columnNames[k], cell.getStringCellValue());
+                        }
                     }
 
                     list.add(line);

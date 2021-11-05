@@ -25,11 +25,20 @@
 
         <dependency>
             <groupId>soya.framework.transform</groupId>
+            <artifactId>transform-commons-poi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>soya.framework.transform</groupId>
             <artifactId>transform-schema</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

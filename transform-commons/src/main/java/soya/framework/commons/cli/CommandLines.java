@@ -84,6 +84,24 @@ public abstract class CommandLines {
         return (String) method.invoke(null, new Object[]{commandLine});
     }
 
+    public static String execute(String[] args, Class<?> cl) throws Exception {
+        Configuration configuration = getConfiguration(cl);
+        Method method = configuration.getCommandMethod(args);
+        if (method == null) {
+            return configuration.help();
+        }
+
+        if (method.getAnnotation(Command.class) == null) {
+            throw new IllegalArgumentException("Not command method: " + method.getName());
+        }
+
+        CommandLine commandLine = commandLineBuilder(method)
+                .setProperties(configuration.env)
+                .create(args);
+
+        return (String) method.invoke(null, new Object[]{commandLine});
+    }
+
     public static Builder commandLineBuilder(Method method) {
         return new Builder(method);
     }
@@ -182,7 +200,20 @@ public abstract class CommandLines {
             }
         }
 
+        public Properties getEnvironment() {
+            return env;
+        }
+
+        public Options getCompileOptions() {
+            return options;
+        }
+
         public Method getCommandMethod(String cl) {
+            if(commands.containsKey(cl)) {
+                return commands.get(cl);
+            }
+
+
             List<String> list = new ArrayList<>();
             StringTokenizer tokenizer = new StringTokenizer(cl);
             while (tokenizer.hasMoreTokens()) {

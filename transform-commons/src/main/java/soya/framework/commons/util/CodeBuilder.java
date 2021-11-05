@@ -26,6 +26,7 @@ public class CodeBuilder {
     };
 
     private StringBuilder builder;
+    private int indentLevel;
 
     private CodeBuilder(StringBuilder builder) {
         this.builder = builder;
@@ -54,6 +55,18 @@ public class CodeBuilder {
     public CodeBuilder appendLine(String s, int indent) {
         builder.append(indents[indent]).append(s).append("\n");
         return this;
+    }
+
+    public int currentIndentLevel() {
+        return indentLevel;
+    }
+
+    public void pushIndent() {
+        indentLevel ++;
+    }
+
+    public void popIndent() {
+        indentLevel --;
     }
 
     public String toString() {

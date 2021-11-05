@@ -274,16 +274,16 @@ public class XsKnowledgeBase<T> implements KnowledgeTreeBase<T, SchemaTypeSystem
         }
 
         private void processChoice(SchemaParticle sp, boolean mixed, TreeNode parent, Tree tree) {
-            System.out.println(sp.getName());
+            //System.out.println(sp.getName());
 
         }
 
         private void processAll(SchemaParticle sp, boolean mixed, TreeNode parent, Tree tree) {
-            System.out.println(sp.getName());
+            //System.out.println(sp.getName());
         }
 
         private void processWildCard(SchemaParticle sp, boolean mixed, TreeNode parent, Tree tree) {
-            System.out.println(sp.getName());
+            //System.out.println(sp.getName());
         }
     }
 
