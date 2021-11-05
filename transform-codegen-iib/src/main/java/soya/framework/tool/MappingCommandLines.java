@@ -397,11 +397,13 @@ public class MappingCommandLines {
         Array.created.entrySet().forEach(e -> {
 
             String xpath = e.getKey().targetPath;
+            Array array = e.getValue();
+
             KnowledgeTreeNode<XsNode> node = tree.get(xpath);
-            getMapping(node).construction.arrays.put(e.getKey().sourcePath, e.getValue());
+            getMapping(node).construction.arrays.put(e.getKey().sourcePath, array);
 
-            if(e.getValue().parent != null) {
-
+            if (array.parent != null) {
+                array.parent.addChild(node);
             }
         });
     }
@@ -847,6 +849,7 @@ public class MappingCommandLines {
                     if (!Array.created.containsKey(arrayKey)) {
                         array = createArray(arrayPath, parent);
                         parentMapping.construction.arrays.put(array.sourcePath, array);
+
                     }
 
                     array.addChild(node);
@@ -897,6 +900,8 @@ public class MappingCommandLines {
                     if (parr != null) {
                         arr.parent = parr;
                     }
+
+
                     Array.created.put(ak, arr);
                 }
 
@@ -1466,7 +1471,6 @@ public class MappingCommandLines {
             if (node.getParent() == null) {
                 printStart(node, codeBuilder);
             }
-            codeBuilder.pushIndent();
 
             node.getChildren().forEach(e -> {
                 Mapping mapping = getMapping(e);
@@ -1475,7 +1479,6 @@ public class MappingCommandLines {
                 }
             });
 
-            codeBuilder.popIndent();
             if (node.getParent() == null) {
                 printEnd(codeBuilder);
             }
@@ -1500,29 +1503,26 @@ public class MappingCommandLines {
         }
 
         private void printConstruct(KnowledgeTreeNode<XsNode> node, CodeBuilder builder) {
+            int indent = builder.currentIndentLevel() + level(node);
 
             String var = var(node);
             String par = var(node.getParent());
             String qname = qname(node);
 
-            builder.appendLine("-- " + node.getPath(), builder.currentIndentLevel());
-            builder.append("DECLARE ", builder.currentIndentLevel())
+            builder.appendLine("-- " + node.getPath(), indent);
+            builder.append("DECLARE ", indent)
                     .append(var).append(" REFERENCE TO ").append(par).appendLine(";");
-            builder.append("CREATE LASTCHILD OF ", builder.currentIndentLevel())
+            builder.append("CREATE LASTCHILD OF ", indent)
                     .append(par).append(" AS ").append(var)
                     .append(" TYPE XMLNSC.Folder NAME '").append(qname).appendLine("';");
             builder.appendLine();
 
-            builder.pushIndent();
             node.getChildren().forEach(e -> {
                 printNode(e, builder);
             });
-            builder.popIndent();
         }
 
         private void printArrays(KnowledgeTreeNode<XsNode> node, CodeBuilder builder) {
-            builder.appendLine("-- " + node.getPath(), builder.currentIndentLevel());
-
             Mapping mapping = getMapping(node);
             mapping.construction.arrays.entrySet().forEach(e -> {
                 printArray(e.getValue(), node, builder);
@@ -1531,17 +1531,53 @@ public class MappingCommandLines {
         }
 
         private void printArray(Array array, KnowledgeTreeNode<XsNode> node, CodeBuilder builder) {
-            builder.append("-- loop" + array.variable, builder.currentIndentLevel())
-                    .append(": ").append(array.sourcePath).append(" to ").append(array.targetPath).appendLine();
+            int indent = builder.currentIndentLevel() + level(node);
+            String inputAssign = array.sourcePath;
+            inputAssign = inputAssign.substring(0, inputAssign.length() - 3) + ".Item";
+            if (array.parent == null) {
+                inputAssign = "_inputRootNode." + inputAssign.replaceAll("/", ".");
+
+            } else {
+                inputAssign = array.parent.variable + "." + inputAssign.substring(array.parent.sourcePath.length() + 1).replaceAll("/", ".");
+            }
+
+            String name = "loop" + array.variable;
+
+            builder.append("-- LOOP FROM ", indent)
+                    .append(array.sourcePath).append(" TO ").append(array.targetPath).appendLine();
+            builder.append("DECLARE ", indent)
+                    .append(array.variable).append(" REFERENCE TO ").append(inputAssign).appendLine(";");
+
+            builder.append(name, indent).append(" : WHILE LASTMOVE(").append(array.variable).appendLine(") DO");
             builder.appendLine();
 
             builder.pushIndent();
+            indent ++;
+
+            String var = var(node);
+            String par = var(node.getParent());
+            String qname = qname(node);
+            builder.appendLine("-- " + node.getPath(), indent);
+            builder.append("DECLARE ", indent)
+                    .append(var).append(" REFERENCE TO ").append(par).appendLine(";");
+            builder.append("CREATE LASTCHILD OF ", indent)
+                    .append(par).append(" AS ").append(var)
+                    .append(" TYPE XMLNSC.Folder NAME '").append(qname).appendLine("';");
+            builder.appendLine();
+
             array.childNodes.forEach(e -> {
                 printNode(e, builder);
             });
+
+            indent --;
+            builder.popIndent();
+            builder.append("MOVE ", indent).append(array.variable).appendLine(" NEXTSIBLING;");
+            builder.append("END WHILE ", indent).append(name).appendLine(";");
+            builder.appendLine();
         }
 
         private void printAssignment(KnowledgeTreeNode<XsNode> node, CodeBuilder builder) {
+            int indent = builder.currentIndentLevel() + level(node);
             Mapping mapping = getMapping(node);
             String par = var(node.getParent());
             String name = node.getName();
@@ -1558,8 +1594,8 @@ public class MappingCommandLines {
                 value = "'???'";
             }
 
-            builder.appendLine("-- " + node.getPath(), builder.currentIndentLevel());
-            builder.append("SET ", builder.currentIndentLevel())
+            builder.appendLine("-- " + node.getPath(), indent);
+            builder.append("SET ", indent)
                     .append(par).append(".(").append(type(node)).append(")").append(name)
                     .append(" = ").append(value).appendLine(";");
             builder.appendLine();
@@ -1570,7 +1606,7 @@ public class MappingCommandLines {
 
             builder.append("BROKER SCHEMA ").appendLine(packageName);
             builder.appendLine();
-            builder.append("CREATE COMPUTE MODULE ").append(name).appendLine(";");
+            builder.append("CREATE COMPUTE MODULE ").appendLine(name);
             builder.appendLine();
             builder.pushIndent();
 
@@ -1601,14 +1637,19 @@ public class MappingCommandLines {
             builder.append("SET OutputRoot.XMLNSC.", builder.currentIndentLevel())
                     .append(node.getName()).appendLine(".(XMLNSC.NamespaceDecl)xmlns:Abs=Abs;");
             builder.appendLine();
+
+            builder.popIndent();
+            builder.popIndent();
         }
 
         private void printEnd(CodeBuilder builder) {
-            builder.popIndent();
-            builder.appendLine("END;", builder.currentIndentLevel());
-            builder.popIndent();
+            builder.appendLine("END;", 1);
             builder.appendLine("END MODULE;");
 
+        }
+
+        private int level(KnowledgeTreeNode<XsNode> node) {
+            return new StringTokenizer(node.getPath(), "/").countTokens();
         }
 
         private String var(KnowledgeTreeNode<XsNode> node) {

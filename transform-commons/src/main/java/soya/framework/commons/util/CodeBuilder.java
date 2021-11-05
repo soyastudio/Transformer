@@ -66,7 +66,13 @@ public class CodeBuilder {
     }
 
     public void popIndent() {
-        indentLevel --;
+        if(indentLevel > 0) {
+            indentLevel --;
+        }
+    }
+
+    public void setCurrentIndentLevel(int indentLevel) {
+        this.indentLevel = indentLevel;
     }
 
     public String toString() {
