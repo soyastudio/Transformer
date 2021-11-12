@@ -39,17 +39,13 @@ public class SchemaCommands extends CommandLines {
     @Command(
             desc = "Parse xsd and render xpath, datatype and cardinality",
             options = {
-                    @Opt(option = "a",
-                            required = true,
-                            defaultValue = "xpathDataType",
-                            desc = "Command name."),
                     @Opt(option = "x",
                             required = true,
                             desc = "Xsd file path.")
             },
             cases = {"-a xpathDataType -x XSD_FILE_PATH"}
     )
-    public static String xsdToXpathDataType(CommandLine commandLine) {
+    public static String xpathSchema(CommandLine commandLine) {
         File file = new File(commandLine.getOptionValue("x"));
         return XsdToXPathDataType.convert(file);
     }
@@ -67,7 +63,7 @@ public class SchemaCommands extends CommandLines {
             },
             cases = {"-a sampleXml -x XSD_FILE_PATH"}
     )
-    public static String xsdToSampleXml(CommandLine commandLine) throws XmlException, IOException {
+    public static String sampleXml(CommandLine commandLine) throws XmlException, IOException {
         File file = new File(commandLine.getOptionValue("x"));
         SchemaTypeSystem sts = XmlBeansUtils.getSchemaTypeSystem(file);
         return SampleXmlUtil.createSampleForType(sts.documentTypes()[0]);
@@ -76,10 +72,6 @@ public class SchemaCommands extends CommandLines {
     @Command(
             desc = "Convert xsd to avro schema",
             options = {
-                    @Opt(option = "a",
-                            required = true,
-                            defaultValue = "sampleXml",
-                            desc = "Command name."),
                     @Opt(option = "x",
                             required = true,
                             desc = "Xsd file path.")
@@ -262,7 +254,5 @@ public class SchemaCommands extends CommandLines {
 
         return GSON.toJson(list);
     }
-
-
 
 }

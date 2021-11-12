@@ -15,8 +15,6 @@ import javax.ws.rs.core.Response;
 @Api(value = "Transform Service")
 public class TransformerResource {
 
-
-
     @POST
     @Path("/ast")
     @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

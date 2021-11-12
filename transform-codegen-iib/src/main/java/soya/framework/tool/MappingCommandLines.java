@@ -9,6 +9,7 @@ import soya.framework.commons.poi.XlsxUtils;
 import soya.framework.commons.util.CodeBuilder;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
+import soya.framework.transform.schema.converter.XsdToAvsc;
 import soya.framework.transform.schema.xs.XmlBeansUtils;
 import soya.framework.transform.schema.xs.XsKnowledgeBase;
 import soya.framework.transform.schema.xs.XsNode;
@@ -34,6 +35,9 @@ public class MappingCommandLines {
         String m = "C:/github/Workshop/AppBuild/BusinessObjects/GroceryOrder/work/xpath-mappings.properties";
         String n = "com.abs.ocrp.AirMilePoints.AirMilePoints_Details_Transformer_Compute";
 
+        //String esql = "C:/github/Workshop/AppBuild/BusinessObjects/GroceryOrder/work/ESED_GroceryOrder_CMM_Transformer_Compute.esql";
+        String esql = "C:/github/Workshop/AppBuild/BusinessObjects/GroceryOrder/work/ESED_GEN.esql";
+
         String SCHEMA = new StringBuilder("-a schema").append(" -x ").append(x).toString();
 
         String MAPPING = new StringBuilder("-a mapping")
@@ -58,8 +62,15 @@ public class MappingCommandLines {
                 .append(" -n ").append(n)
                 .toString();
 
+        String VALIDATE_ESQL = new StringBuilder("-a validateEsql")
+                .append(" -f ").append(esql)
+                .append(" -x ").append(x)
+                .append(" -j ").append(j)
+                .append(" -m ").append(xlsx)
+                .toString();
 
-        String cmd = CONSTRUCT;
+
+        String cmd = VALIDATE_ESQL;
 
         try {
             String result = CommandLines.execute(cmd, MappingCommandLines.class, null);
@@ -114,6 +125,22 @@ public class MappingCommandLines {
     @CommandLines.Command(
             desc = "Convert xml to json against xml or avro schema",
             options = {
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String avsc(CommandLine cmd) throws MappingException {
+        File file = new File(cmd.getOptionValue("x"));
+        return XsdToAvsc.fromXmlSchema(file).toString(true);
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
                     @CommandLines.Opt(option = "m",
                             required = true,
                             desc = "Mapping file path."),
@@ -151,6 +178,43 @@ public class MappingCommandLines {
         }
 
         return output;
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String unknownPaths(CommandLine cmd) throws Exception {
+
+        KnowledgeTree<SchemaTypeSystem, XsNode> knowledgeTree = createKnowledgeTree(cmd);
+
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        mappings.entrySet().forEach(e -> {
+            String key = e.getKey();
+            if (knowledgeTree.get(key) == null) {
+
+                String guess = guessPath(key, knowledgeTree);
+                if (guess == null) {
+                    guess = "???";
+                }
+
+                codeBuilder.append(key).append("=").appendLine(guess);
+            }
+        });
+
+        return codeBuilder.toString();
     }
 
     @CommandLines.Command(
@@ -377,6 +441,273 @@ public class MappingCommandLines {
         return codeBuilder.toString();
     }
 
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "j",
+                            desc = "Path of mapping adjustment file."),
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "n",
+                            required = true,
+                            desc = "Full name of the esql module."),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String generateEsql(CommandLine cmd) throws Exception {
+
+        KnowledgeTree<SchemaTypeSystem, XsNode> knowledgeTree = createKnowledgeTree(cmd);
+
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        if (cmd.hasOption("j")) {
+            mappings = adjust(mappings, new File(cmd.getOptionValue("j")));
+        }
+
+        annotateMappings(knowledgeTree, mappings);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        new EsqlRenderer(cmd.getOptionValue("n")).render(knowledgeTree.root(), codeBuilder);
+
+        return codeBuilder.toString();
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "f",
+                            required = true,
+                            desc = "Path of mapping adjustment file."),
+                    @CommandLines.Opt(option = "j",
+                            desc = "Adjustment file."),
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String validateEsql(CommandLine cmd) throws Exception {
+
+        Set<String> set = new LinkedHashSet<>();
+        try (Stream<String> lines = Files.lines(Paths.get(cmd.getOptionValue("f")), Charset.defaultCharset())) {
+            lines.forEachOrdered(line -> {
+                String token = line.trim();
+                if (token.startsWith("-- ")) {
+                    token = token.substring(3);
+                    if (token.contains("/") && !token.contains(" ")) {
+                        set.add(token);
+                    }
+                }
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        KnowledgeTree<SchemaTypeSystem, XsNode> knowledgeTree = createKnowledgeTree(cmd);
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        if (cmd.hasOption("j")) {
+            mappings = adjust(mappings, new File(cmd.getOptionValue("j")));
+        }
+
+        annotateMappings(knowledgeTree, mappings);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        Iterator<String> iterator = knowledgeTree.paths();
+        while (iterator.hasNext()) {
+            String path = iterator.next();
+            KnowledgeTreeNode<XsNode> node = knowledgeTree.get(path);
+            Mapping mapping = getMapping(node);
+            if (mapping.construction != null || mapping.assignment != null) {
+                if (path.contains("/") && !set.contains(path)) {
+                    codeBuilder.append(path).append("=").appendLine(mapping.toString());
+
+                }
+            }
+        }
+        return codeBuilder.toString();
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "j",
+                            required = true,
+                            desc = "Path of mapping adjustment file."),
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "s",
+                            desc = "Sheet name of xlsx file."),
+                    @CommandLines.Opt(option = "x",
+                            desc = "Version to render.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String xpathJsonType(CommandLine cmd) throws Exception {
+
+        KnowledgeTree<SchemaTypeSystem, XsNode> knowledgeTree = createKnowledgeTree(cmd);
+
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        if (cmd.hasOption("j")) {
+            mappings = adjust(mappings, new File(cmd.getOptionValue("j")));
+        }
+
+        annotateMappings(knowledgeTree, mappings);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        Iterator<String> iterator = knowledgeTree.paths();
+        while (iterator.hasNext()) {
+            String path = iterator.next();
+            KnowledgeTreeNode<XsNode> node = knowledgeTree.get(path);
+            Mapping mapping = getMapping(node);
+
+            if (mapping.construction != null || mapping.assignment != null) {
+                String dataType = mapping.type;
+                String cardinality = mapping.cardinality;
+
+                String type = null;
+                if (!cardinality.endsWith("-1")) {
+                    type = "array";
+                    if (!"complex".equals(dataType)) {
+                        type = simpleTypeConvert(dataType) + "_array";
+                    }
+
+                } else {
+                    type = simpleTypeConvert(dataType);
+                }
+
+                if (!"string".equals(type)) {
+                    codeBuilder.append(path).append("=").appendLine(type);
+                }
+            }
+        }
+
+        String output = codeBuilder.toString();
+        if (cmd.hasOption("o")) {
+            write(output, cmd.getOptionValue("o"));
+        }
+
+        return output;
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "j",
+                            required = true,
+                            desc = "Path of mapping adjustment file."),
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "s",
+                            desc = "Sheet name of xlsx file."),
+                    @CommandLines.Opt(option = "x",
+                            desc = "Version to render.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String xpathJsonTypeFunctions(CommandLine cmd) throws Exception {
+
+        KnowledgeTree<SchemaTypeSystem, XsNode> knowledgeTree = createKnowledgeTree(cmd);
+
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        if (cmd.hasOption("j")) {
+            mappings = adjust(mappings, new File(cmd.getOptionValue("j")));
+        }
+
+        annotateMappings(knowledgeTree, mappings);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        Iterator<String> iterator = knowledgeTree.paths();
+        while (iterator.hasNext()) {
+            String path = iterator.next();
+            KnowledgeTreeNode<XsNode> node = knowledgeTree.get(path);
+            Mapping mapping = getMapping(node);
+
+            if (mapping.construction != null || mapping.assignment != null) {
+                String dataType = mapping.type;
+                String cardinality = mapping.cardinality;
+
+                String type = null;
+                if (!cardinality.endsWith("-1")) {
+                    type = "array";
+                    if (!"complex".equals(dataType)) {
+                        type = simpleTypeConvert(dataType) + "_array";
+                    }
+
+                } else {
+                    type = simpleTypeConvert(dataType);
+                }
+
+                if (!"string".equals(type)) {
+                    codeBuilder.append(type).append("(").append(path).append(");");
+                }
+            }
+        }
+
+        String output = codeBuilder.toString();
+        if (cmd.hasOption("o")) {
+            write(output, cmd.getOptionValue("o"));
+        }
+
+        return output;
+    }
+
+    private static String simpleTypeConvert(String type) {
+        switch (type) {
+            case "boolean":
+                return "boolean";
+
+            case "float":
+            case "double":
+            case "decimal":
+            case "int":
+            case "integer":
+            case "long":
+            case "short":
+            case "byte":
+            case "nonPositiveInteger":
+            case "NegativeInteger":
+            case "nonNegativeInteger":
+            case "positiveInteger":
+            case "unsignedLong":
+            case "unsignedInt":
+            case "unsignedShort":
+            case "unsignedByte":
+                return "number";
+
+            default:
+                return "string";
+        }
+    }
+
     private static void annotateMappings(KnowledgeTree<SchemaTypeSystem, XsNode> tree, Map<String, Mapping> mappings) throws MappingException {
         mappings.entrySet().forEach(e -> {
             String xpath = e.getKey();
@@ -401,7 +732,6 @@ public class MappingCommandLines {
 
             KnowledgeTreeNode<XsNode> node = tree.get(xpath);
             getMapping(node).construction.arrays.put(e.getKey().sourcePath, array);
-
             if (array.parent != null) {
                 array.parent.addChild(node);
             }
@@ -531,6 +861,14 @@ public class MappingCommandLines {
         String token = path.substring(0, index + 1) + "@" + path.substring(index + 1);
         if (tree.contains(token)) {
             return token;
+        }
+
+        Iterator<String> iterator = tree.paths();
+        while (iterator.hasNext()) {
+            String p = iterator.next();
+            if (p.equalsIgnoreCase(path)) {
+                return p;
+            }
         }
 
         return null;
@@ -1087,8 +1425,9 @@ public class MappingCommandLines {
                     Field field = Adjustment.class.getDeclaredField(func.name);
                     field.setAccessible(true);
                     field.set(this, func.parameters[0]);
+
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
@@ -1145,8 +1484,10 @@ public class MappingCommandLines {
 
     static class Array {
         private static int count;
+        private static Set<String> vars = new HashSet<>();
         private static Map<ArrayKey, Array> created = new LinkedHashMap<>();
 
+        private final String id;
         private final String targetPath;
         private final String sourcePath;
 
@@ -1161,7 +1502,8 @@ public class MappingCommandLines {
             this.targetPath = arrayKey.targetPath;
 
             count++;
-            this.variable = "_arr" + count;
+            this.id = "array" + count;
+            this.variable = "_" + id;
         }
 
         public void addChild(KnowledgeTreeNode<XsNode> node) {
@@ -1187,7 +1529,13 @@ public class MappingCommandLines {
 
         @Override
         public String toString() {
-            return "array(" + sourcePath + ")";
+            if (parent == null) {
+                return id + "(" + sourcePath + ")";
+
+            } else {
+                String token = parent.variable + sourcePath.substring(parent.sourcePath.length());
+                return id + "(" + token + ")";
+            }
         }
 
         @Override
@@ -1552,7 +1900,7 @@ public class MappingCommandLines {
             builder.appendLine();
 
             builder.pushIndent();
-            indent ++;
+            indent++;
 
             String var = var(node);
             String par = var(node.getParent());
@@ -1569,7 +1917,7 @@ public class MappingCommandLines {
                 printNode(e, builder);
             });
 
-            indent --;
+            indent--;
             builder.popIndent();
             builder.append("MOVE ", indent).append(array.variable).appendLine(" NEXTSIBLING;");
             builder.append("END WHILE ", indent).append(name).appendLine(";");
@@ -1583,6 +1931,10 @@ public class MappingCommandLines {
             String name = node.getName();
             if (name.startsWith("@")) {
                 name = name.substring(1);
+                XsNode xsNode = node.origin();
+                if (!xsNode.getName().getLocalPart().equals(xsNode.getName().toString())) {
+                    name = "Abs:" + name;
+                }
             } else {
                 name = "Abs:" + name;
             }

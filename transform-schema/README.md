@@ -2,51 +2,51 @@
 
 ### Basic Types Conversion
 
-| XSD Type              | Avro Type          | 
-| --------------------- | ------------------ | 
-| xs:boolean            | boolean            |
-| xs:base64Binary       | bytes              |
-| xs:hexBinary          | bytes              |
-| xs:anyURI             | string             |
-| xs:QName              | string             |
-| xs:NOTATION           | string             |
-| xs:float              | float              |
-| xs:double             | double             |
-| xs:decimal            | double             |
-| xs:string             | string             |
-| xs:duration           | string             |
-| xs:dateTime           | string             |
-| xs:time               | string             |
-| xs:date               | string             |
-| xs:gYearMonth         | string             |
-| xs:gYear              | string             |
-| xs:gMonthDay          | string             |
-| xs:gDay               | string             |
-| xs:gMonth             | string             |
-| xs:integer            | int                |
-| xs:long               | long               |
-| xs:int                | int                |
-| xs:short              | int                |
-| xs:byte               | int                |
-| xs:nonPositiveInteger | int                |
-| xs:NegativeInteger    | int                |
-| xs:nonNegativeInteger | int                |
-| xs:positiveInteger    | int                |
-| xs:unsignedLong       | long               |
-| xs:unsignedInt        | int                |
-| xs:unsignedShort      | int                |
-| xs:unsignedByte       | int                |
-| xs:normalizedString   | string             |
-| xs:token              | string             |
-| xs:language           | string             |
-| xs:NCName             | string             |
-| xs:ID                 | string             |
-| xs:IDREF              | string             |
-| xs:IDREFS             | string             |
-| xs:ENTITY             | string             |
-| xs:ENTITIES           | string             |
-| xs:NMTOKEN            | string             |
-| xs:NMTOKENS           | string             |
+| XSD Type              | Avro Type          | Json Type          |
+| --------------------- | ------------------ | ------------------ |
+| xs:boolean            | boolean            | boolean            |
+| xs:base64Binary       | bytes              | string             |
+| xs:hexBinary          | bytes              | string             |
+| xs:anyURI             | string             | string             |
+| xs:QName              | string             | string             |
+| xs:NOTATION           | string             | string             |
+| xs:float              | float              | number             |
+| xs:double             | double             | number             |
+| xs:decimal            | double             | number             |
+| xs:string             | string             | string             |
+| xs:duration           | string             | string             |
+| xs:dateTime           | string             | string             |
+| xs:time               | string             | string             |
+| xs:date               | string             | string             |
+| xs:gYearMonth         | string             | string             |
+| xs:gYear              | string             | string             |
+| xs:gMonthDay          | string             | string             |
+| xs:gDay               | string             | string             |
+| xs:gMonth             | string             | string             |
+| xs:integer            | int                | number             |
+| xs:long               | long               | number             |
+| xs:int                | int                | number             |
+| xs:short              | int                | number             |
+| xs:byte               | int                | number             |
+| xs:nonPositiveInteger | int                | number             |
+| xs:NegativeInteger    | int                | number             |
+| xs:nonNegativeInteger | int                | number             |
+| xs:positiveInteger    | int                | number             |
+| xs:unsignedLong       | long               | number             |
+| xs:unsignedInt        | int                | number             |
+| xs:unsignedShort      | int                | number             |
+| xs:unsignedByte       | int                | number             |
+| xs:normalizedString   | string             | string             |
+| xs:token              | string             | string             |
+| xs:language           | string             | string             |
+| xs:NCName             | string             | string             |
+| xs:ID                 | string             | string             |
+| xs:IDREF              | string             | string             |
+| xs:IDREFS             | string             | string             |
+| xs:ENTITY             | string             | string             |
+| xs:ENTITIES           | string             | string             |
+| xs:NMTOKEN            | string             | string             |
+| xs:NMTOKENS           | string             | string             |
 
 ### Complex Types Conversion
 

@@ -245,10 +245,12 @@
 
         <module>transform-core</module>
         <module>transform-avro</module>
-        <module>transform-application</module>
 
         <module>transform-commandlines</module>
         <module>transform-codegen-iib</module>
+        <module>transform-kafka</module>
+
+        <module>transform-application</module>
     </modules>
 
 </project>

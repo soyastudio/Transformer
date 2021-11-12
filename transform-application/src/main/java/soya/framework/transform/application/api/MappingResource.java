@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 @Component
 @Path("/mapping")
-@Api(value = "Mapping Commandline Service")
+@Api(value = "Mapping Service")
 public class MappingResource {
 
     @Autowired
@@ -20,23 +20,9 @@ public class MappingResource {
     @GET
     @Path("/help")
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response help(@QueryParam("q") String query) {
+    public Response help() {
         try {
-            return Response.ok(mappingService.help(query)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
-        }
-    }
-
-    @POST
-    @Path("/cmd")
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response execute(@HeaderParam("cmd") String cmd, String msg) {
-        try {
-            return Response.ok(mappingService.execute(cmd, msg)).build();
+            return Response.ok(mappingService.help()).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,131 +33,31 @@ public class MappingResource {
     @GET
     @Path("/{bod}/{cmd}")
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response dispatch(@PathParam("bod") String bod, @PathParam("cmd") String cmd, @HeaderParam("opt") String opt) {
-        try {
-            String cl = mappingService.defaultCommandLine(bod, cmd);
+    public Response execute(@PathParam("bod") String bod, @PathParam("cmd") String cmd, @HeaderParam("opt") String opt) {
+        StringBuilder builder = new StringBuilder()
+                .append("-a ").append(cmd)
+                .append(" -b ").append(bod);
 
-            if(opt != null) {
-                cl = cl + " " + opt;
+        if (opt != null) {
+            String[] arr = opt.trim().split("-");
+            for (String s : arr) {
+                String token = s.trim();
+                if (token.length() > 1) {
+                    String o = token;
+                    if (token.contains(" ")) {
+                        int index = token.indexOf(" ");
+                        o = token.substring(0, index);
+                    }
+
+                    if (!o.equals("a") && !o.equals("b")) {
+                        builder.append("-").append(token);
+                    }
+
+                }
             }
-
-            return Response.ok(mappingService.execute(cl, null)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
         }
-    }
 
-    @GET
-    @Path("/schema/{bod}")
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response schema(@PathParam("bod") String bod) {
         try {
-            StringBuilder builder = new StringBuilder("-a schema").append(" -b ").append(bod);
-
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
-    @Path("/mappings/{bod}/{xlsx}")
-    @Produces({MediaType.TEXT_PLAIN})
-    public Response schema(@PathParam("bod") String bod, @PathParam("xlsx") String xlsx, @QueryParam("v") String v) {
-        try {
-            if (!xlsx.toLowerCase().endsWith(".xlsx")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Xlsx file is required.").build();
-            }
-
-            StringBuilder builder = new StringBuilder("-a mapping")
-                    .append(" -b ").append(bod)
-                    .append(" -m ").append(xlsx);
-
-            if(v != null) {
-                builder.append(" -v ").append(v);
-            }
-
-
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
-    @Path("/adjustment/{bod}/{xlsx}")
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response adjust(@PathParam("bod") String bod, @PathParam("xlsx") String xlsx, @QueryParam("v") String v) {
-        try {
-            if (!xlsx.toLowerCase().endsWith(".xlsx")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Xlsx file is required.").build();
-            }
-
-            StringBuilder builder = new StringBuilder("-a adjust")
-                    .append(" -b ").append(bod)
-                    .append(" -m ").append(xlsx)
-                    .append(" -j xpath-adjustment.properties");
-
-            if(v != null) {
-                builder.append(" -v ").append(v);
-            }
-
-
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
-    @Path("/validate/{bod}/{xlsx}")
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response validate(@PathParam("bod") String bod, @PathParam("xlsx") String xlsx) {
-        try {
-            if (!xlsx.toLowerCase().endsWith(".xlsx")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Xlsx file is required.").build();
-            }
-
-            StringBuilder builder = new StringBuilder("-a validate")
-                    .append(" -b ").append(bod)
-                    .append(" -m ").append(xlsx)
-                    .append(" -j ").append("xpath-adjustment.properties");
-
-
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
-        }
-    }
-
-    @GET
-    @Path("/construct/{bod}/{xlsx}")
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response construct(@PathParam("bod") String bod, @PathParam("xlsx") String xlsx) {
-        try {
-            if (!xlsx.toLowerCase().endsWith(".xlsx")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Xlsx file is required.").build();
-            }
-
-            StringBuilder builder = new StringBuilder("-a construct")
-                    .append(" -b ").append(bod)
-                    .append(" -m ").append(xlsx)
-                    .append(" -j ").append("xpath-adjustment.properties");
-
             return Response.ok(mappingService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {

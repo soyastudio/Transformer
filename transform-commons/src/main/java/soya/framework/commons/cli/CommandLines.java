@@ -208,29 +208,39 @@ public abstract class CommandLines {
             return options;
         }
 
-        public Method getCommandMethod(String cl) {
-            if(commands.containsKey(cl)) {
-                return commands.get(cl);
+        public Method getCommandMethod(String name) {
+            return commands.get(name);
+        }
+
+        public Options getOptions(String methodName) {
+            Options options = new Options();
+            Method method = commands.get(methodName);
+            Command command = method.getAnnotation(Command.class);
+            Opt[] opts = command.options();
+            for (Opt opt : opts) {
+                options.addOption(Option.builder(opt.option())
+                        .required(opt.required())
+                        .hasArg(opt.hasArg())
+                        .desc(opt.desc())
+                        .build());
             }
 
+            return options;
 
-            List<String> list = new ArrayList<>();
-            StringTokenizer tokenizer = new StringTokenizer(cl);
-            while (tokenizer.hasMoreTokens()) {
-                list.add(tokenizer.nextToken());
-            }
-
-            return getCommandMethod(list.toArray(new String[list.size()]));
         }
 
         public Method getCommandMethod(String[] args) {
-            try {
-                CommandLine commandLine = parser.parse(options, args);
-                return commands.get(commandLine.getOptionValue("a"));
+            boolean boo = false;
+            for (String arg : args) {
+                if ("-a".equals(arg)) {
+                    boo = true;
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                } else if (boo) {
+                    return commands.get(arg);
+                }
             }
+
+            return null;
         }
 
         public String help() {

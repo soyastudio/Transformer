@@ -1,7 +1,9 @@
-package soya.framework.transform.application.service;
+package soya.framework.commons.cli;
 
 public interface CommandLineService {
-    String help(String query);
+
+    String help();
 
     String execute(String cmd, String msg) throws Exception;
+
 }

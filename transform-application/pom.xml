@@ -41,6 +41,12 @@
 
         <dependency>
             <groupId>soya.framework.transform</groupId>
+            <artifactId>transform-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>soya.framework.transform</groupId>
             <artifactId>transform-core</artifactId>
             <version>${project.version}</version>
         </dependency>
