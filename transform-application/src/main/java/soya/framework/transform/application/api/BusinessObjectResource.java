@@ -48,7 +48,23 @@ public class BusinessObjectResource {
     }
 
     @GET
-    @Path("/project/get/{bod}")
+    @Path("/project/{bod}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response project(@PathParam("bod") String bod) {
+        try {
+            StringBuilder builder = new StringBuilder()
+                    .append("-a get")
+                    .append(" -b ").append(bod);
+            return Response.ok(projectService.execute(builder.toString(), null)).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/project/{bod}/readme")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.TEXT_PLAIN})
     public Response get(@PathParam("bod") String bod) {
@@ -65,7 +81,7 @@ public class BusinessObjectResource {
     }
 
     @POST
-    @Path("/project/versioning/{bod}/{version}")
+    @Path("/project/{bod}/versioning/{version}")
     @Produces({MediaType.TEXT_PLAIN})
     public Response version(@PathParam("bod") String bod, @PathParam("version") String version) {
         try {
@@ -83,7 +99,7 @@ public class BusinessObjectResource {
     }
 
     @POST
-    @Path("/project/cutoff/{bod}/{version}")
+    @Path("/project/{bod}/cutoff/{version}")
     @Produces({MediaType.TEXT_PLAIN})
     public Response cutoff(@PathParam("bod") String bod, @PathParam("version") String version) {
         try {

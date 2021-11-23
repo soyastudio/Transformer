@@ -25,6 +25,10 @@ public class ProjectService extends BusinessObjectService<ProjectCommandLines> {
         options.getOptions().forEach(e -> {
             String opt = e.getOpt();
             String value = values.get(opt);
+            System.out.println("============= " + opt);
+
+
+
             if(value != null) {
                 args.add("-" + opt);
                 args.add(value);

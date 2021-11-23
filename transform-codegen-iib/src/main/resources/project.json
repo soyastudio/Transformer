@@ -1,0 +1,41 @@
+{
+  "name": "???",
+  "source": [
+    "???"
+  ],
+  "consumer": "???",
+  "application": "???",
+  "flows": [
+    {
+      "name": "???",
+      "namespace": "???",
+      "input": [
+        {
+          "name": "???",
+          "namespace": "???",
+          "location": "???"
+        }
+      ],
+      "output": [
+        {
+          "name": "???",
+          "namespace": "???",
+          "location": "???"
+        }
+      ],
+      "nodes": [
+        {
+          "name": "???",
+          "namespace": "???",
+          "properties": [
+            {
+              "name": "???",
+              "value": "???"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "egNumber": "???"
+}

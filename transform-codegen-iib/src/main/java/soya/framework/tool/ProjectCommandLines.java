@@ -1,12 +1,15 @@
 package soya.framework.tool;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import soya.framework.commons.cli.CommandLines;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 
 public class ProjectCommandLines {
@@ -19,6 +22,15 @@ public class ProjectCommandLines {
     private static String XPATH_SCHEMA_FILE = "xpath-schema.properties";
     private static String XPATH_MAPPING_FILE = "xpath-mapping.properties";
     private static String XPATH_ADJUSTMENT_FILE = "xpath-adjustment.properties";
+
+    private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static Project template;
+
+    static {
+        InputStream inputStream = ProjectCommandLines.class.getClassLoader().getResourceAsStream("project.json");
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        template = GSON.fromJson(reader, Project.class);
+    }
 
     @CommandLines.Command(
             desc = "Convert xml to json against xml or avro schema",
@@ -35,12 +47,13 @@ public class ProjectCommandLines {
     public static String create(CommandLine cmd) throws Exception {
         File base = new File(cmd.getOptionValue("w"));
         String bod = cmd.getOptionValue("b");
-
         File boDir = new File(base, bod);
         if(boDir.exists()) {
 
         } else {
             FileUtils.forceMkdir(boDir);
+            File projectFile = new File(boDir, "project.json");
+            projectFile.createNewFile();
 
             File reqDir = new File(boDir, REQUIREMENT_DIR);
             FileUtils.forceMkdir(reqDir);
@@ -56,8 +69,36 @@ public class ProjectCommandLines {
 
         }
 
-
         return null;
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "b",
+                            required = true,
+                            desc = "Business Object Name"),
+                    @CommandLines.Opt(option = "w",
+                            required = true,
+                            desc = "Workspace directory")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String get(CommandLine cmd) throws Exception {
+        File base = new File(cmd.getOptionValue("w"));
+        String bod = cmd.getOptionValue("b");
+        File boDir = new File(base, bod);
+
+        File projectFile = new File(boDir, "project.json");
+        Project project;
+        if(!projectFile.exists()) {
+            project = template;
+
+        } else {
+            project = GSON.fromJson(new FileReader(projectFile), Project.class);
+        }
+
+        return GSON.toJson(project);
     }
 
     @CommandLines.Command(
@@ -123,6 +164,5 @@ public class ProjectCommandLines {
 
         return null;
     }
-
 
 }
