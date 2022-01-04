@@ -2,7 +2,7 @@ package soya.framework.transform.application.service;
 
 import org.apache.commons.cli.Options;
 import org.springframework.stereotype.Service;
-import soya.framework.tool.ProjectCommandLines;
+import soya.framework.tool.ProjectCommands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Service
-public class ProjectService extends BusinessObjectService<ProjectCommandLines> {
+public class ProjectService extends BusinessObjectService<ProjectCommands> {
 
     @Override
     protected String[] parse(Options options, Map<String, String> values, String msg, Properties properties) {

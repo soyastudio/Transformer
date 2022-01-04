@@ -1,19 +1,36 @@
 package soya.framework.tool;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.SchemaTypeSystem;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.impl.xsd2inst.SampleXmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import soya.framework.commons.cli.CommandLines;
 import soya.framework.commons.poi.XlsxUtils;
 import soya.framework.commons.util.CodeBuilder;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
+import soya.framework.transform.schema.avro.AvroUtils;
+import soya.framework.transform.schema.avro.SampleAvroGenerator;
+import soya.framework.transform.schema.converter.XmlToAvro;
 import soya.framework.transform.schema.converter.XsdToAvsc;
 import soya.framework.transform.schema.xs.XmlBeansUtils;
 import soya.framework.transform.schema.xs.XsKnowledgeBase;
 import soya.framework.transform.schema.xs.XsNode;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,7 +41,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class MappingCommandLines {
+public class MappingCommands {
+    private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) {
 
@@ -73,7 +91,7 @@ public class MappingCommandLines {
         String cmd = VALIDATE_ESQL;
 
         try {
-            String result = CommandLines.execute(cmd, MappingCommandLines.class, null);
+            String result = CommandLines.execute(cmd, MappingCommands.class, null);
             System.out.println(result);
 
             System.exit(0);
@@ -123,6 +141,23 @@ public class MappingCommandLines {
     }
 
     @CommandLines.Command(
+            desc = "Generate sample xml against xsd",
+            options = {
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd file path.")
+            },
+            cases = {"-a sampleXml -x XSD_FILE_PATH"}
+    )
+    public static String sampleXml(CommandLine commandLine) throws XmlException, IOException {
+        File file = new File(commandLine.getOptionValue("x"));
+        SchemaTypeSystem sts = XmlBeansUtils.getSchemaTypeSystem(file);
+        return SampleXmlUtil.createSampleForType(sts.documentTypes()[0]);
+    }
+
+    @CommandLines.Command(
             desc = "Convert xml to json against xml or avro schema",
             options = {
                     @CommandLines.Opt(option = "o",
@@ -136,6 +171,146 @@ public class MappingCommandLines {
     public static String avsc(CommandLine cmd) throws MappingException {
         File file = new File(cmd.getOptionValue("x"));
         return XsdToAvsc.fromXmlSchema(file).toString(true);
+    }
+
+    @CommandLines.Command(
+            desc = "Generate sample avro against xsd",
+            options = {
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd file path."),
+                    @CommandLines.Opt(option = "z",
+                            defaultValue = "json",
+                            desc = "Encoder, value can be 'json', 'binary'. Default value is 'json'.")
+            },
+            cases = {"-a sampleAvro -x XSD_FILE_PATH -o OUTPUT_FILE"}
+    )
+    public static String sampleAvro(CommandLine commandLine) throws Exception {
+        Schema schema = null;
+        String path = commandLine.getOptionValue("x");
+        if (path.toLowerCase().endsWith(".xsd")) {
+            schema = XsdToAvsc.fromXmlSchema(XmlBeansUtils.getSchemaTypeSystem(new File(path)));
+
+        } else if (path.toLowerCase().endsWith(".avsc")) {
+            schema = new Schema.Parser().parse(new File(path));
+
+        }
+
+        if (schema == null) {
+            throw new IllegalArgumentException("Can not create schema from: " + path);
+        }
+
+        Object result = new SampleAvroGenerator(schema, new Random(), 0).generate();
+        GenericRecord genericRecord = (GenericRecord) result;
+
+        if (commandLine.hasOption("o")) {
+            File out = new File(commandLine.getOptionValue("o"));
+            if (out.exists()) {
+                AvroUtils.write(genericRecord, schema, out);
+            }
+        }
+
+        return genericRecord.toString();
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to avro against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "a",
+                            required = true,
+                            defaultValue = "sampleXml",
+                            desc = "Command name."),
+                    @CommandLines.Opt(option = "i",
+                            required = true,
+                            desc = "Input string, file or url"),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToAvro -x XSD_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String xmlToAvro(CommandLine commandLine) {
+
+        File xsd = new File(commandLine.getOptionValue("x"));
+
+        Schema schema = XsdToAvsc.fromXmlSchema(xsd);
+
+        File xml = new File(commandLine.getOptionValue("i"));
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+            // parse XML file
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(xml);
+            document.getDocumentElement().normalize();
+
+            //Here comes the root node
+            Element root = document.getDocumentElement();
+
+            GenericData.Record record = XmlToAvro.createRecord(schema, root);
+
+            if (commandLine.hasOption("o")) {
+                File out = new File(commandLine.getOptionValue("o"));
+                AvroUtils.write(record, schema, out);
+            }
+
+            return record.toString();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "a",
+                            required = true,
+                            defaultValue = "sampleXml",
+                            desc = "Command name."),
+                    @CommandLines.Opt(option = "i",
+                            required = true,
+                            desc = "Input string, file or url"),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "x",
+                            required = true,
+                            desc = "Xsd or avsc file path.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String xmlToJson(CommandLine commandLine) {
+
+        File xsd = new File(commandLine.getOptionValue("x"));
+        Schema schema = XsdToAvsc.fromXmlSchema(xsd);
+        File xml = new File(commandLine.getOptionValue("i"));
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+            // parse XML file
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(xml);
+            document.getDocumentElement().normalize();
+
+            //Here comes the root node
+            Element root = document.getDocumentElement();
+
+            GenericData.Record record = XmlToAvro.createRecord(schema, root);
+
+            JsonObject jsonObject = JsonParser.parseString(record.toString()).getAsJsonObject();
+
+            return GSON.toJson(jsonObject);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @CommandLines.Command(
@@ -221,53 +396,6 @@ public class MappingCommandLines {
             desc = "Convert xml to json against xml or avro schema",
             options = {
                     @CommandLines.Opt(option = "j",
-                            required = true,
-                            desc = "Path of mapping adjustment file."),
-                    @CommandLines.Opt(option = "m",
-                            required = true,
-                            desc = "Mapping file path."),
-                    @CommandLines.Opt(option = "o",
-                            desc = "Output file or path"),
-                    @CommandLines.Opt(option = "s",
-                            desc = "Sheet name of xlsx file."),
-                    @CommandLines.Opt(option = "v",
-                            desc = "Version to render.")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
-    public static String adjust(CommandLine cmd) throws Exception {
-
-        File file = new File(cmd.getOptionValue("m"));
-        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
-        Map<String, Mapping> mappings = load(file, sheet);
-
-        File adjustmentFile = new File(cmd.getOptionValue("j"));
-        mappings = adjust(mappings, adjustmentFile);
-
-        CodeBuilder codeBuilder = CodeBuilder.newInstance();
-        mappings.entrySet().forEach(e -> {
-            String key = e.getKey();
-            Mapping mapping = e.getValue();
-
-            if (!cmd.hasOption("v") || cmd.getOptionValue("v").equals(mapping.version)) {
-                codeBuilder.append(key).append("=").appendLine(mapping.toString());
-            }
-
-
-        });
-
-        String output = codeBuilder.toString();
-        if (cmd.hasOption("o")) {
-            write(output, cmd.getOptionValue("o"));
-        }
-
-        return output;
-    }
-
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "j",
                             desc = "Path of mapping adjustment file."),
                     @CommandLines.Opt(option = "m",
                             required = true,
@@ -331,6 +459,53 @@ public class MappingCommandLines {
         });
 
         return codeBuilder.toString();
+    }
+
+    @CommandLines.Command(
+            desc = "Convert xml to json against xml or avro schema",
+            options = {
+                    @CommandLines.Opt(option = "j",
+                            required = true,
+                            desc = "Path of mapping adjustment file."),
+                    @CommandLines.Opt(option = "m",
+                            required = true,
+                            desc = "Mapping file path."),
+                    @CommandLines.Opt(option = "o",
+                            desc = "Output file or path"),
+                    @CommandLines.Opt(option = "s",
+                            desc = "Sheet name of xlsx file."),
+                    @CommandLines.Opt(option = "v",
+                            desc = "Version to render.")
+            },
+            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
+    )
+    public static String adjust(CommandLine cmd) throws Exception {
+
+        File file = new File(cmd.getOptionValue("m"));
+        String sheet = cmd.hasOption("s") ? cmd.getOptionValue("s") : null;
+        Map<String, Mapping> mappings = load(file, sheet);
+
+        File adjustmentFile = new File(cmd.getOptionValue("j"));
+        mappings = adjust(mappings, adjustmentFile);
+
+        CodeBuilder codeBuilder = CodeBuilder.newInstance();
+        mappings.entrySet().forEach(e -> {
+            String key = e.getKey();
+            Mapping mapping = e.getValue();
+
+            if (!cmd.hasOption("v") || cmd.getOptionValue("v").equals(mapping.version)) {
+                codeBuilder.append(key).append("=").appendLine(mapping.toString());
+            }
+
+
+        });
+
+        String output = codeBuilder.toString();
+        if (cmd.hasOption("o")) {
+            write(output, cmd.getOptionValue("o"));
+        }
+
+        return output;
     }
 
     @CommandLines.Command(
@@ -1175,8 +1350,7 @@ public class MappingCommandLines {
                 String arrayPath = exp.substring(0, index + 3);
 
                 if (parentMapping.arrayDepth != depth) {
-                    System.out.println(exp + " -> " + node.getPath());
-
+                    // System.out.println(exp + " -> " + node.getPath());
                     mapping.error = new MappingError(node.getPath(), exp,
                             "Array depth not match: " + exp + " to " + parent.getPath());
 

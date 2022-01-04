@@ -2,8 +2,8 @@ package soya.framework.tool;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
+import com.samskivert.mustache.Mustache;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -12,7 +12,7 @@ import soya.framework.commons.cli.CommandLines;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class ProjectCommandLines {
+public class ProjectCommands {
 
     private static String REQUIREMENT_DIR = "requirement";
     private static String WORK_DIR = "work";
@@ -27,7 +27,7 @@ public class ProjectCommandLines {
     private static Project template;
 
     static {
-        InputStream inputStream = ProjectCommandLines.class.getClassLoader().getResourceAsStream("project.json");
+        InputStream inputStream = ProjectCommands.class.getClassLoader().getResourceAsStream("project.json");
         InputStreamReader reader = new InputStreamReader(inputStream);
         template = GSON.fromJson(reader, Project.class);
     }
@@ -48,12 +48,18 @@ public class ProjectCommandLines {
         File base = new File(cmd.getOptionValue("w"));
         String bod = cmd.getOptionValue("b");
         File boDir = new File(base, bod);
-        if(boDir.exists()) {
+        if (boDir.exists()) {
+            return null;
 
         } else {
             FileUtils.forceMkdir(boDir);
             File projectFile = new File(boDir, "project.json");
             projectFile.createNewFile();
+
+            Project project = GSON.fromJson(GSON.toJson(template), Project.class);
+            project.setName(bod);
+
+            FileUtils.write(projectFile, GSON.toJson(project), Charset.defaultCharset());
 
             File reqDir = new File(boDir, REQUIREMENT_DIR);
             FileUtils.forceMkdir(reqDir);
@@ -67,9 +73,9 @@ public class ProjectCommandLines {
             File histDir = new File(boDir, HISTORY_DIR);
             FileUtils.forceMkdir(histDir);
 
-        }
+            return GSON.toJson(project);
 
-        return null;
+        }
     }
 
     @CommandLines.Command(
@@ -91,7 +97,7 @@ public class ProjectCommandLines {
 
         File projectFile = new File(boDir, "project.json");
         Project project;
-        if(!projectFile.exists()) {
+        if (!projectFile.exists()) {
             project = template;
 
         } else {
@@ -163,6 +169,13 @@ public class ProjectCommandLines {
         System.out.println("================ cutoff...");
 
         return null;
+    }
+
+    private static String mustache(String template, Object data) throws IOException {
+        JsonObject json = GSON.toJsonTree(data).getAsJsonObject();
+        InputStream inputStream = ProjectCommands.class.getClassLoader().getResourceAsStream(template);
+        return Mustache.compiler().compile(
+                new InputStreamReader(inputStream)).execute(JsonUtils.toMap(json));
     }
 
 }

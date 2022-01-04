@@ -38,7 +38,6 @@ public class SchemaService extends BusinessObjectService<SchemaCommands> {
             arguments.add(v);
         });
 
-
         return arguments.toArray(new String[arguments.size()]);
     }
 }

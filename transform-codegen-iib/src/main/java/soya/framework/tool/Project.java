@@ -4,7 +4,7 @@ public class Project {
 
     private String name;
     private String[] source;
-    private String consumer;
+    private String[] consumer;
 
     private String application;
     private Flow[] flows;
@@ -30,11 +30,11 @@ public class Project {
         this.source = source;
     }
 
-    public String getConsumer() {
+    public String[] getConsumer() {
         return consumer;
     }
 
-    public void setConsumer(String consumer) {
+    public void setConsumer(String[] consumer) {
         this.consumer = consumer;
     }
 

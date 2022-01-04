@@ -32,6 +32,8 @@ public abstract class BusinessObjectService<T> implements CommandLineService {
     protected File homeDir;
     protected File cmmBaseDir;
     protected File boBaseDir;
+    protected File mustacheDir;
+    protected File logDir;
 
     public BusinessObjectService() {
         this.commandLineClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -54,6 +56,13 @@ public abstract class BusinessObjectService<T> implements CommandLineService {
             boBaseDir = new File(properties.getProperty("workspace.bo.dir"));
             if (!boBaseDir.exists()) {
                 throw new RuntimeException("BO dir does not exist: " + boBaseDir.getPath());
+            }
+
+            mustacheDir = new File(properties.getProperty("workspace.mustache.dir"));
+
+            logDir = new File(properties.getProperty("workspace.log.dir"));
+            if(!logDir.exists()) {
+                logDir.mkdir();
             }
 
         } catch (IOException e) {

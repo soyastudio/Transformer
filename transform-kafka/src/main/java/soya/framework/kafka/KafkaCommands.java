@@ -456,8 +456,6 @@ public class KafkaCommands {
         send(kafkaClientFactory(cmd).createKafkaProducer(), record, new Callback() {
             @Override
             public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-
-
                 KafkaConsumer<String, byte[]> kafkaConsumer = kafkaClientFactory(cmd).createKafkaConsumer();
                 List<PartitionInfo> partitionInfoSet = kafkaConsumer.partitionsFor(obTopic);
                 Collection<TopicPartition> partitions = partitionInfoSet.stream()
@@ -1350,10 +1348,10 @@ public class KafkaCommands {
     protected static String render(ConsumerRecord<String, byte[]> rc) throws TransformerException {
         String msg = new String(rc.value()).trim();
         if (msg.startsWith("<") && msg.endsWith(">")) {
-            return prettyPrintXml(rc);
+            return prettyPrintXml(msg);
 
         } else if (msg.startsWith("{") && msg.endsWith("}") || msg.startsWith("[") && msg.endsWith("]")) {
-            return prettyPrintJson(rc);
+            return GSON.toJson(JsonParser.parseString(msg));
 
         } else {
             return new String(rc.value());

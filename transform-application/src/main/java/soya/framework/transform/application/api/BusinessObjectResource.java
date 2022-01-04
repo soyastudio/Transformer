@@ -3,9 +3,8 @@ package soya.framework.transform.application.api;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import soya.framework.tool.Project;
 import soya.framework.transform.application.service.KafkaService;
-import soya.framework.transform.application.service.MappingService;
+import soya.framework.transform.application.service.TransformService;
 import soya.framework.transform.application.service.ProjectService;
 import soya.framework.transform.application.service.SchemaService;
 
@@ -25,7 +24,7 @@ public class BusinessObjectResource {
     private SchemaService schemaService;
 
     @Autowired
-    private MappingService mappingService;
+    private TransformService mappingService;
 
     @Autowired
     private KafkaService kafkaService;
@@ -34,7 +33,7 @@ public class BusinessObjectResource {
     @Path("/project/create/{bod}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.TEXT_PLAIN})
-    public Response create(@PathParam("bod") String bod, Project project) {
+    public Response create(@PathParam("bod") String bod) {
         try {
             StringBuilder builder = new StringBuilder()
                     .append("-a create")

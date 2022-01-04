@@ -1,27 +1,19 @@
 package soya.framework.transform.application.service;
 
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.springframework.stereotype.Service;
-import soya.framework.commons.cli.AbstractCommandLineService;
-import soya.framework.commons.cli.CommandMethod;
-import soya.framework.commons.util.PropertiesUtils;
-import soya.framework.tool.MappingCommandLines;
+import soya.framework.tool.MappingCommands;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 @Service
-public class MappingService extends BusinessObjectService<MappingCommandLines> {
-
-    private static final String BOD_DIR = "workspace.bo.dir";
+public class TransformService extends BusinessObjectService<MappingCommands> {
 
     @Override
     protected String[] parse(Options options, Map<String, String> values, String msg, Properties properties) {
         String bod = values.get("b");
-        File boDir = new File(properties.getProperty(BOD_DIR) + "/" + bod);
+        File boDir = new File(boBaseDir, bod);
         if (!boDir.exists()) {
             throw new IllegalArgumentException("Bod does not exist: " + values.get("b"));
         }
@@ -32,7 +24,7 @@ public class MappingService extends BusinessObjectService<MappingCommandLines> {
             String v = values.get(o);
 
             if ("x".equals(o)) {
-                File xsd = new File(properties.getProperty("workspace.cmm.dir") + "/BOD/Get" + bod + ".xsd");
+                File xsd = new File(cmmBaseDir, "/BOD/Get" + bod + ".xsd");
                 if (!xsd.exists()) {
                     throw new IllegalArgumentException("File does not exist: " + xsd);
                 }
