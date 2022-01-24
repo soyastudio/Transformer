@@ -6,6 +6,7 @@ import org.apache.commons.cli.Options;
 import java.lang.reflect.Method;
 
 public class CommandMethod {
+
     private final transient Method method;
     private final transient Options options;
     private final String command;

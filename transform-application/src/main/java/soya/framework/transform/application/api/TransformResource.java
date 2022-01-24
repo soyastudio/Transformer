@@ -15,18 +15,19 @@ import javax.ws.rs.core.Response;
 public class TransformResource {
 
     @Autowired
-    private TransformService mappingService;
+    private TransformService transformService;
 
     @GET
     @Path("/schema/{bod}")
     @Produces({MediaType.TEXT_PLAIN})
     public Response schema(@PathParam("bod") String bod) {
+
         StringBuilder builder = new StringBuilder()
                 .append("-a ").append("schema")
                 .append(" -b ").append(bod);
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,7 +44,7 @@ public class TransformResource {
                 .append(" -b ").append(bod);
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +61,7 @@ public class TransformResource {
                 .append(" -b ").append(bod);
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +77,7 @@ public class TransformResource {
                 .append("-a ").append("sampleAvro")
                 .append(" -b ").append(bod);
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +98,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +119,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,7 +140,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,7 +161,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +182,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,7 +199,7 @@ public class TransformResource {
                 .append(" -b ").append(bod);
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,7 +216,7 @@ public class TransformResource {
                 .append(" -b ").append(bod);
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,7 +229,7 @@ public class TransformResource {
     //@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response help() {
         try {
-            return Response.ok(mappingService.help()).build();
+            return Response.ok(transformService.help()).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -264,7 +265,7 @@ public class TransformResource {
         }
 
         try {
-            return Response.ok(mappingService.execute(builder.toString(), null)).build();
+            return Response.ok(transformService.execute(builder.toString(), null)).build();
 
         } catch (Exception e) {
             e.printStackTrace();

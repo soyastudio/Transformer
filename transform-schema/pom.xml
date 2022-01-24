@@ -50,6 +50,13 @@
             <version>2.8.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.0.1-jre</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
         <dependency>
             <groupId>commons-cli</groupId>

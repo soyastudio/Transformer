@@ -357,4 +357,9 @@ public class XmlToAvro {
         }
 
     }
+
+    public static GenericData.Record sampleRecord(Schema schema) {
+        GenericData.Record record = new GenericData.Record(schema);
+        return record;
+    }
 }

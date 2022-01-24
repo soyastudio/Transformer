@@ -41,7 +41,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class MappingCommands {
+public class TransformCommands {
+
     private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) {
@@ -91,7 +92,7 @@ public class MappingCommands {
         String cmd = VALIDATE_ESQL;
 
         try {
-            String result = CommandLines.execute(cmd, MappingCommands.class, null);
+            String result = CommandLines.execute(cmd, TransformCommands.class, null);
             System.out.println(result);
 
             System.exit(0);

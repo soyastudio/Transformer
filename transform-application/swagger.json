@@ -1,0 +1,665 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "Workshop Server",
+    "contact" : {
+      "name" : "wenqun.soya@gmail.com"
+    }
+  },
+  "basePath" : "/api",
+  "tags" : [ {
+    "name" : "Business Object Development Service"
+  }, {
+    "name" : "Mustache Service"
+  }, {
+    "name" : "Schema Service"
+  }, {
+    "name" : "Transform Service"
+  } ],
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/work/project/{bod}/readme" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "get",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/project/create/{bod}" : {
+      "post" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "create",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/project/{bod}/versioning/{version}" : {
+      "post" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "version",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/validate/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "validate",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/adjustment/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "adjust",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/unknown/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "unknown",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/project/{bod}/cutoff/{version}" : {
+      "post" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "cutoff",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/mapping/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "mapping",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/schema/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "schema",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/construct/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "construct",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/kafka/{bod}/{test}" : {
+      "post" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "kafka",
+        "consumes" : [ "text/plain", "application/json", "application/xml" ],
+        "produces" : [ "text/plain", "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "test",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "options",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/arrays/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "arrays",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "xlsx",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/project/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "project",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/avsc/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "avsc",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/work/sampleXml/{bod}" : {
+      "get" : {
+        "tags" : [ "Business Object Development Service" ],
+        "operationId" : "sampleXml",
+        "produces" : [ "application/xml" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/mustache/template" : {
+      "get" : {
+        "tags" : [ "Mustache Service" ],
+        "operationId" : "template",
+        "produces" : [ "text/plain", "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "mustache",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/schema/{bod}/{cmd}" : {
+      "post" : {
+        "tags" : [ "Schema Service" ],
+        "operationId" : "execute",
+        "consumes" : [ "text/plain", "application/json", "application/xml" ],
+        "produces" : [ "text/plain", "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "cmd",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/schema/help" : {
+      "get" : {
+        "tags" : [ "Schema Service" ],
+        "operationId" : "help",
+        "produces" : [ "text/plain", "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "q",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/validate/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "validate_1",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/adjustment/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "adjustment",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/mapping/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "mapping_1",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/schema/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "schema_1",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/construct/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "construct_1",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/avsc/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "avsc_1",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/sample-xml/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "sampleXml_1",
+        "produces" : [ "application/xml" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/unknown-paths/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "unknownPaths",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sheet",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/json-type-mappings/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "xpathJsonType",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/sample-avro/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "sampleAvro",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/transform/json-type-functions/{bod}" : {
+      "get" : {
+        "tags" : [ "Transform Service" ],
+        "operationId" : "xpathJsonTypeFunctions",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "bod",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    }
+  }
+}

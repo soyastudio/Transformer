@@ -1,5 +1,6 @@
 package soya.framework.transform.schema.avro;
 
+import com.google.common.base.CaseFormat;
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -134,6 +135,7 @@ public class SampleAvroGenerator {
         if (propertiesProp.containsKey(ITERATION_PROP)) {
             return generateIteration(schema, propertiesProp);
         }
+
         switch (schema.getType()) {
             case ARRAY:
                 return generateArray(schema, propertiesProp);
@@ -1063,7 +1065,7 @@ public class SampleAvroGenerator {
     private GenericRecord generateRecord(Schema schema) {
         GenericRecordBuilder builder = new GenericRecordBuilder(schema);
         for (Schema.Field field : schema.getFields()) {
-            builder.set(field, generateObject(field.schema()));
+            builder.set(field, generateObject(field.schema(), field.name()));
         }
         return builder.build();
     }
@@ -1396,5 +1398,204 @@ public class SampleAvroGenerator {
         public boolean hasNext() {
             return true;
         }
+    }
+
+    //
+    private Object generateObject(Schema schema, String fieldName) {
+
+        Map propertiesProp = getProperties(schema).orElse(Collections.emptyMap());
+        if (propertiesProp.containsKey(OPTIONS_PROP)) {
+            return generateOption(schema, propertiesProp);
+        }
+        if (propertiesProp.containsKey(ITERATION_PROP)) {
+            return generateIteration(schema, propertiesProp);
+        }
+
+        switch (schema.getType()) {
+            case ARRAY:
+                return generateArray(schema, fieldName, propertiesProp);
+            case BOOLEAN:
+                return generateBoolean(propertiesProp);
+            case BYTES:
+                return generateBytes(schema, propertiesProp);
+            case DOUBLE:
+                return generateDouble(fieldName, propertiesProp);
+            case ENUM:
+                return generateEnumSymbol(schema);
+            case FIXED:
+                return generateFixed(schema);
+            case FLOAT:
+                return generateFloat(fieldName, propertiesProp);
+            case INT:
+                return generateInt(fieldName, propertiesProp);
+            case LONG:
+                return generateLong(fieldName, propertiesProp);
+            case MAP:
+                return generateMap(schema, propertiesProp);
+            case NULL:
+                return generateNull();
+            case RECORD:
+                return generateRecord(schema);
+            case STRING:
+                return generateString(schema, fieldName, propertiesProp);
+            case UNION:
+                return generateUnion(schema, fieldName);
+            default:
+                throw new RuntimeException("Unrecognized schema type: " + schema.getType());
+        }
+    }
+
+    private Collection<Object> generateArray(Schema schema, String fieldName, Map propertiesProp) {
+        //int length = getLengthBounds(propertiesProp).random();
+        int length = 1;
+        Collection<Object> result = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            result.add(generateObject(schema.getElementType(), fieldName));
+        }
+        return result;
+    }
+
+    private Object generateUnion(Schema schema, String fieldName) {
+        List<Schema> schemas = schema.getTypes();
+        //return generateObject(schemas.get(random.nextInt(schemas.size())));
+        for(Schema sc: schemas) {
+            if(!Schema.Type.NULL.equals(sc.getType())) {
+                return generateObject(sc, fieldName);
+            }
+        }
+
+        return generateObject(schemas.get(0));
+    }
+
+    private Double generateDouble(String fieldName, Map propertiesProp) {
+        Object rangeProp = propertiesProp.get(RANGE_PROP);
+        if (rangeProp != null) {
+            if (rangeProp instanceof Map) {
+                Map rangeProps = (Map) rangeProp;
+                Double rangeMinField = getDecimalNumberField(RANGE_PROP, RANGE_PROP_MIN, rangeProps);
+                Double rangeMaxField = getDecimalNumberField(RANGE_PROP, RANGE_PROP_MAX, rangeProps);
+                double rangeMin = rangeMinField != null ? rangeMinField : -1 * Double.MAX_VALUE;
+                double rangeMax = rangeMaxField != null ? rangeMaxField : Double.MAX_VALUE;
+                if (rangeMin >= rangeMax) {
+                    throw new RuntimeException(String.format(
+                            "'%s' field must be strictly less than '%s' field in %s property",
+                            RANGE_PROP_MIN,
+                            RANGE_PROP_MAX,
+                            RANGE_PROP
+                    ));
+                }
+                return rangeMin + (random.nextDouble() * (rangeMax - rangeMin));
+            } else {
+                throw new RuntimeException(String.format(
+                        "%s property must be an object",
+                        RANGE_PROP
+                ));
+            }
+        }
+
+        return 99.99;
+    }
+
+    private Float generateFloat(String fieldName, Map propertiesProp) {
+        Object rangeProp = propertiesProp.get(RANGE_PROP);
+        if (rangeProp != null) {
+            if (rangeProp instanceof Map) {
+                Map rangeProps = (Map) rangeProp;
+                Float rangeMinField = getFloatNumberField(
+                        RANGE_PROP,
+                        RANGE_PROP_MIN,
+                        rangeProps
+                );
+                Float rangeMaxField = getFloatNumberField(
+                        RANGE_PROP,
+                        RANGE_PROP_MAX,
+                        rangeProps
+                );
+                float rangeMin = Optional.ofNullable(rangeMinField).orElse(-1 * Float.MAX_VALUE);
+                float rangeMax = Optional.ofNullable(rangeMaxField).orElse(Float.MAX_VALUE);
+                if (rangeMin >= rangeMax) {
+                    throw new RuntimeException(String.format(
+                            "'%s' field must be strictly less than '%s' field in %s property",
+                            RANGE_PROP_MIN,
+                            RANGE_PROP_MAX,
+                            RANGE_PROP
+                    ));
+                }
+                return rangeMin + (random.nextFloat() * (rangeMax - rangeMin));
+            }
+        }
+        return 19.99f;
+    }
+
+    private Integer generateInt(String fieldName, Map propertiesProp) {
+        Object rangeProp = propertiesProp.get(RANGE_PROP);
+        if (rangeProp != null) {
+            if (rangeProp instanceof Map) {
+                Map rangeProps = (Map) rangeProp;
+                Integer rangeMinField = getIntegerNumberField(RANGE_PROP, RANGE_PROP_MIN, rangeProps);
+                Integer rangeMaxField = getIntegerNumberField(RANGE_PROP, RANGE_PROP_MAX, rangeProps);
+                int rangeMin = Optional.ofNullable(rangeMinField).orElse(Integer.MIN_VALUE);
+                int rangeMax = Optional.ofNullable(rangeMaxField).orElse(Integer.MAX_VALUE);
+                if (rangeMin >= rangeMax) {
+                    throw new RuntimeException(String.format(
+                            "'%s' field must be strictly less than '%s' field in %s property",
+                            RANGE_PROP_MIN,
+                            RANGE_PROP_MAX,
+                            RANGE_PROP
+                    ));
+                }
+                return rangeMin + ((int) (random.nextDouble() * (rangeMax - rangeMin)));
+            }
+        }
+        return 987654321;
+    }
+
+    private Long generateLong(String fieldName, Map propertiesProp) {
+        Object rangeProp = propertiesProp.get(RANGE_PROP);
+        if (rangeProp != null) {
+            if (rangeProp instanceof Map) {
+                Map rangeProps = (Map) rangeProp;
+                Long rangeMinField = getIntegralNumberField(RANGE_PROP, RANGE_PROP_MIN, rangeProps);
+                Long rangeMaxField = getIntegralNumberField(RANGE_PROP, RANGE_PROP_MAX, rangeProps);
+                long rangeMin = Optional.ofNullable(rangeMinField).orElse(Long.MIN_VALUE);
+                long rangeMax = Optional.ofNullable(rangeMaxField).orElse(Long.MAX_VALUE);
+                if (rangeMin >= rangeMax) {
+                    throw new RuntimeException(String.format(
+                            "'%s' field must be strictly less than '%s' field in %s property",
+                            RANGE_PROP_MIN,
+                            RANGE_PROP_MAX,
+                            RANGE_PROP
+                    ));
+                }
+                return rangeMin + (((long) (random.nextDouble() * (rangeMax - rangeMin))));
+            }
+        }
+        return 987654321l;
+    }
+
+    private String generateString(Schema schema, String fieldName, Map propertiesProp) {
+        if(fieldName == null) {
+            return "string";
+        }
+
+        String value = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, fieldName);
+        if(value.endsWith("_I_D")) {
+            value = value.replace("_I_D", "_ID");
+        }
+
+        if(value.endsWith("_T_S")) {
+            value = value.replace("_T_S", "_TS");
+        }
+
+        if(value.endsWith("_IND")) {
+            value = "Y";
+        }
+
+        if(value.endsWith("_DT_TM") || value.endsWith("_DT") || value.endsWith("_TM") || value.endsWith("_TS")) {
+            value = "2021-03-16T12:21:47.403Z";
+        }
+
+        return value;
+
     }
 }

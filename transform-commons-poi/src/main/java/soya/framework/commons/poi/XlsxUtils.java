@@ -5,10 +5,8 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -28,7 +26,6 @@ public class XlsxUtils {
         List<Map<String, String>> data = extract(xlsx, "Map-SUMMARY_CMM", DEFAULT_START_TOKEN, columns);
         System.out.println(gson.toJson(data));
     }
-
 
     public static List<Map<String, String>> extract(File file, String sheetName, String startToken, String[] columnNames) throws IOException {
         List<Map<String, String>> list = new ArrayList<>();
@@ -77,6 +74,7 @@ public class XlsxUtils {
             while (sheetIterator.hasNext()) {
                 Row currentRow = sheetIterator.next();
                 if (start) {
+
                     Map<String, String> line = new LinkedHashMap<>();
                     for (int k = 0; k < columnNames.length; k++) {
                         if (columnIndex[k] == 0) {
@@ -85,10 +83,22 @@ public class XlsxUtils {
 
                         Cell cell = currentRow.getCell(columnIndex[k]);
                         if(cell != null) {
-                            line.put(columnNames[k], cell.getStringCellValue());
+                            String value = cell.getStringCellValue();
+                            while (value.contains("\n")) {
+                                value = value.replace("\n", " ");
+                            }
+
+                            XSSFCellStyle style = (XSSFCellStyle) currentRow.getCell(columnIndex[0]).getCellStyle();
+                            if(style != null && style.getFont().getStrikeout()) {
+                                if(k == 0) {
+                                    value = "# " + value;
+                                }
+                            }
+
+
+                            line.put(columnNames[k], value);
                         }
                     }
-
                     list.add(line);
 
                 } else {
@@ -106,7 +116,6 @@ public class XlsxUtils {
                         if (isLabelRow && cell != null && cell.getCellType().equals(CellType.STRING) && cell.getStringCellValue() != null) {
                             String label = cell.getStringCellValue().trim();
                             if (label != null) {
-
                                 int index = find(label, columnNames);
                                 if (index >= 0) {
                                     columnIndex[index] = i;

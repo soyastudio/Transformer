@@ -2,13 +2,13 @@ package soya.framework.transform.application.service;
 
 import org.apache.commons.cli.Options;
 import org.springframework.stereotype.Service;
-import soya.framework.tool.MappingCommands;
+import soya.framework.tool.TransformCommands;
 
 import java.io.File;
 import java.util.*;
 
 @Service
-public class TransformService extends BusinessObjectService<MappingCommands> {
+public class TransformService extends BusinessObjectService<TransformCommands> {
 
     @Override
     protected String[] parse(Options options, Map<String, String> values, String msg, Properties properties) {
