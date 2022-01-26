@@ -27,7 +27,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import soya.framework.commons.cli.CommandLines.Command;
-import soya.framework.commons.cli.CommandLines.Opt;
+import soya.framework.commons.cli2.CommandLines.Command;
+import soya.framework.commons.cli2.CommandLines.Opt;
 
 public class KafkaCommands {
 

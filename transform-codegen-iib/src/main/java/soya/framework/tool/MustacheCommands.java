@@ -1,7 +1,7 @@
 package soya.framework.tool;
 
 import org.apache.commons.cli.CommandLine;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 
 public class MustacheCommands {
 

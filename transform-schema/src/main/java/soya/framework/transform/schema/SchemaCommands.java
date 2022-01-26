@@ -15,7 +15,7 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.impl.xsd2inst.SampleXmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 import soya.framework.transform.schema.avro.AvroUtils;
 import soya.framework.transform.schema.avro.SampleAvroGenerator;
 import soya.framework.transform.schema.converter.XmlToAvro;
@@ -28,10 +28,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class SchemaCommands extends CommandLines {

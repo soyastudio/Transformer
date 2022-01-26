@@ -1,4 +1,4 @@
-package soya.framework.commons.cli;
+package soya.framework.commons.cli2;
 
 import org.apache.commons.cli.*;
 

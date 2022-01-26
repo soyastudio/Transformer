@@ -7,9 +7,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.springframework.stereotype.Service;
-import soya.framework.commons.cli.CommandLineService;
-import soya.framework.commons.cli.CommandLines;
-import soya.framework.commons.cli.CommandMethod;
+import soya.framework.commons.cli2.CommandLineService;
+import soya.framework.commons.cli2.CommandLines;
+import soya.framework.commons.cli2.CommandMethod;
 import soya.framework.commons.util.PropertiesUtils;
 import soya.framework.kafka.KafkaCommands;
 

@@ -15,7 +15,7 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.impl.xsd2inst.SampleXmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 import soya.framework.commons.poi.XlsxUtils;
 import soya.framework.commons.util.CodeBuilder;
 import soya.framework.transform.schema.KnowledgeTree;

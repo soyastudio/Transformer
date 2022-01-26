@@ -7,7 +7,7 @@ import com.samskivert.mustache.Mustache;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 
 import java.io.*;
 import java.nio.charset.Charset;

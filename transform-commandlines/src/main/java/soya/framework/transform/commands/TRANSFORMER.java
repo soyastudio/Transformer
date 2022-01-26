@@ -2,7 +2,7 @@ package soya.framework.transform.commands;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import soya.framework.commons.cli.CommandLines;
+import soya.framework.commons.cli2.CommandLines;
 import soya.framework.transform.schema.SchemaCommands;
 
 import java.util.Properties;
