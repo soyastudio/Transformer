@@ -1,16 +1,13 @@
 package soya.framework.tool.commands;
 
 import org.apache.xmlbeans.SchemaTypeSystem;
+import soya.framework.commons.commandline.Command;
 import soya.framework.commons.util.CodeBuilder;
-import soya.framework.tool.TransformCommands;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
 import soya.framework.transform.schema.xs.XsNode;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@CommandExecutor(name = "schema")
+@Command(name = "schema")
 public class XmlSchemaCommand extends SchemaCommand {
 
     @Override

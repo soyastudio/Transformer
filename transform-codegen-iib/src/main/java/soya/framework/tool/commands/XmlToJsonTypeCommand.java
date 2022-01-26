@@ -1,6 +1,7 @@
 package soya.framework.tool.commands;
 
 import org.apache.xmlbeans.SchemaTypeSystem;
+import soya.framework.commons.commandline.Command;
 import soya.framework.commons.util.CodeBuilder;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
@@ -8,7 +9,7 @@ import soya.framework.transform.schema.xs.XsNode;
 
 import java.util.Locale;
 
-@CommandExecutor(name = "json-type-mappings")
+@Command(name = "json-type-mappings")
 public class XmlToJsonTypeCommand extends SchemaCommand {
 
     @Override

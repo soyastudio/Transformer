@@ -4,6 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import soya.framework.commons.commandline.CommandCallable;
+import soya.framework.commons.commandline.Command;
+import soya.framework.commons.commandline.CommandOption;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -17,7 +20,7 @@ public class CommandRunner {
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private static Map<String, Class<? extends Command>> classMap;
+    private static Map<String, Class<? extends CommandCallable>> classMap;
     private static Map<String, Options> optionsMap;
 
     static {
@@ -40,7 +43,7 @@ public class CommandRunner {
         this.executorService = executorService;
     }
 
-    public String execute(Command command) throws Exception {
+    public String execute(CommandCallable command) throws Exception {
         Future<String> future = executorService.submit(command);
         while (!future.isDone()) {
             Thread.sleep(100l);
@@ -64,13 +67,13 @@ public class CommandRunner {
         }
     }
 
-    private static Command create(String[] args) throws Exception {
+    private static CommandCallable create(String[] args) throws Exception {
         String cmd = action(args);
         if(classMap.containsKey(cmd)) {
-            Class<? extends Command> cls = classMap.get(cmd);
+            Class<? extends CommandCallable> cls = classMap.get(cmd);
             Options options = optionsMap.get(cmd);
 
-            Command command = cls.newInstance();
+            CommandCallable command = cls.newInstance();
             CommandLine commandLine = new DefaultParser().parse(options, args);
 
             Class<?> superClass = cls;
@@ -110,8 +113,8 @@ public class CommandRunner {
         throw new IllegalArgumentException("");
     }
 
-    private static void register(Class<? extends Command> cls) {
-        String name = cls.getAnnotation(CommandExecutor.class).name();
+    private static void register(Class<? extends CommandCallable> cls) {
+        String name = cls.getAnnotation(Command.class).name();
         classMap.put(name, cls);
 
         Options options = new Options();
@@ -143,8 +146,8 @@ public class CommandRunner {
 
     }
 
-    @CommandExecutor(name = "help")
-    static class HelpCommand implements Command {
+    @Command(name = "help")
+    static class HelpCommand implements CommandCallable {
 
         @Override
         public String call() throws Exception {

@@ -1,6 +1,9 @@
 package soya.framework.tool.commands;
 
-@CommandExecutor(name = "version")
+import soya.framework.commons.commandline.Command;
+import soya.framework.commons.commandline.CommandOption;
+
+@Command(name = "version")
 public class VersionCommand extends BusinessObjectCommand {
 
     @CommandOption(option = "v", longOption = "version", required = true)

@@ -1,6 +1,8 @@
 package soya.framework.tool.commands;
 
-@CommandExecutor(name = "create")
+import soya.framework.commons.commandline.Command;
+
+@Command(name = "create")
 public class CreateCommand extends BusinessObjectCommand {
 
     @Override

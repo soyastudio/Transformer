@@ -55,7 +55,7 @@ public class KafkaClientFactory {
 
     }
 
-    protected static void configure(Properties properties) {
+    public static void configure(Properties properties) {
         configuration.putAll(properties);
         factories.clear();
     }

@@ -1,8 +1,11 @@
 package soya.framework.tool.commands;
 
+import soya.framework.commons.commandline.CommandCallable;
+import soya.framework.commons.commandline.CommandOption;
+
 import java.io.File;
 
-public abstract class BusinessObjectCommand implements Command {
+public abstract class BusinessObjectCommand implements CommandCallable {
     public static final String CMM_DIR = "CMM";
     public static final String DIMENSIONS_DIR = "Dimensions";
     public static final String TEMPLATES_DIR = "Templates";

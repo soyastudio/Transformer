@@ -1,4 +1,4 @@
-package soya.framework.tool.commands;
+package soya.framework.commons.commandline;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandLineTemplate {
+public @interface CommandMapping {
     String command();
 
     String template() default "";

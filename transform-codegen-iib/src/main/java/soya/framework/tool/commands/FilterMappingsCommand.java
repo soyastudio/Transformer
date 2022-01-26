@@ -1,13 +1,14 @@
 package soya.framework.tool.commands;
 
-import org.checkerframework.checker.units.qual.C;
+import soya.framework.commons.commandline.Command;
+import soya.framework.commons.commandline.CommandOption;
 import soya.framework.commons.util.CodeBuilder;
 
 import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
-@CommandExecutor(name = "filter")
+@Command(name = "filter")
 public class FilterMappingsCommand extends XPathMappingsCommand {
 
     @CommandOption(option = "q", longOption = "query")

@@ -2,9 +2,11 @@ package soya.framework.transform.application.api;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import soya.framework.tool.commands.CommandLineTemplate;
-import soya.framework.transform.application.service.BusinessObjectCommandDelegate;
+import soya.framework.commons.commandline.CommandAdapter;
+import soya.framework.commons.commandline.CommandDelegate;
+import soya.framework.commons.commandline.CommandMapping;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -16,13 +18,14 @@ import javax.ws.rs.core.Response;
 public class BusinessObjectCommandResource {
 
     @Autowired
-    private BusinessObjectCommandDelegate delegate;
+    @Qualifier("BusinessObjectCommandDelegate")
+    private CommandDelegate delegate;
 
     @GET
     @Path("/help")
     @Produces({MediaType.TEXT_PLAIN})
     public Response help(@QueryParam("cmd") String cmd) throws Exception {
-        return Response.ok(delegate.help(cmd)).build();
+        return Response.ok(delegate.context().toString(cmd)).build();
     }
 
     @POST
@@ -36,7 +39,7 @@ public class BusinessObjectCommandResource {
     @GET
     @Path("/{bod}/schema")
     @Produces({MediaType.TEXT_PLAIN})
-    @CommandLineTemplate(command = "schema", template = "-r {{workspace.home}} -b {{bod}}")
+    @CommandMapping(command = "schema", template = "-r {{workspace.home}} -b {{0}}")
     public Response schema(@PathParam("bod") String bod) throws Exception {
         return Response.ok(delegate("schema", new Object[]{bod})).build();
     }
@@ -44,7 +47,7 @@ public class BusinessObjectCommandResource {
     @GET
     @Path("/{bod}/sample-xml")
     @Produces({MediaType.APPLICATION_XML})
-    @CommandLineTemplate(command = "sample-xml", template = "-r {{workspace.home}} -b {{bod}}")
+    @CommandMapping(command = "sample-xml", template = "-r {{workspace.home}} -b {{0}}")
     public Response sampleXml(@PathParam("bod") String bod) throws Exception {
         return Response.ok(delegate("sampleXml", new Object[]{bod})).build();
     }
@@ -52,7 +55,7 @@ public class BusinessObjectCommandResource {
     @GET
     @Path("/{bod}/avsc")
     @Produces({MediaType.APPLICATION_JSON})
-    @CommandLineTemplate(command = "avsc", template = "-r {{workspace.home}} -b {{bod}}")
+    @CommandMapping(command = "avsc", template = "-r {{workspace.home}} -b {{0}}")
     public Response avsc(@PathParam("bod") String bod) throws Exception {
         return Response.ok(delegate("avsc", new Object[]{bod})).build();
     }
@@ -60,13 +63,13 @@ public class BusinessObjectCommandResource {
     @GET
     @Path("/{bod}/create")
     @Produces({MediaType.APPLICATION_JSON})
-    @CommandLineTemplate(command = "create", template = "-r {{workspace.home}} -b {{bod}}")
+    @CommandMapping(command = "create", template = "-r {{workspace.home}} -b {{0}}")
     public Response create(@PathParam("bod") String bod) throws Exception {
         return Response.ok(delegate("create", new Object[]{bod})).build();
     }
 
-    protected String delegate(String methodName, Object[] args) throws Exception{
-        return delegate.execute(getClass(), methodName, args);
+    protected String delegate(String methodName, Object[] args) throws Exception {
+        return CommandAdapter.execute(getClass(), methodName, args, delegate);
     }
 
 

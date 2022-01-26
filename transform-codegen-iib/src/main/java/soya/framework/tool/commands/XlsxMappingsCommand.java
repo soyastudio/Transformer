@@ -1,8 +1,9 @@
 package soya.framework.tool.commands;
 
+import soya.framework.commons.commandline.Command;
+import soya.framework.commons.commandline.CommandOption;
 import soya.framework.commons.poi.XlsxUtils;
 import soya.framework.commons.util.CodeBuilder;
-import soya.framework.tool.TransformCommands;
 import soya.framework.transform.schema.KnowledgeTreeNode;
 import soya.framework.transform.schema.xs.XsNode;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-@CommandExecutor(name = "mapping")
+@Command(name = "mapping")
 public class XlsxMappingsCommand extends BusinessObjectCommand {
 
     @CommandOption(option = "f", longOption = "file")

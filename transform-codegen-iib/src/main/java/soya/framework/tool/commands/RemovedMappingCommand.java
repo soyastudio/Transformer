@@ -1,11 +1,12 @@
 package soya.framework.tool.commands;
 
+import soya.framework.commons.commandline.Command;
 import soya.framework.commons.util.CodeBuilder;
 
 import java.io.File;
 import java.util.Map;
 
-@CommandExecutor(name = "removed")
+@Command(name = "removed")
 public class RemovedMappingCommand extends XPathMappingsCommand {
 
     @Override

@@ -3,6 +3,7 @@ package soya.framework.tool.commands;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.xmlbeans.SchemaTypeSystem;
+import soya.framework.commons.commandline.Command;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.avro.SampleAvroGenerator;
 import soya.framework.transform.schema.converter.XsdToAvsc;
@@ -10,7 +11,7 @@ import soya.framework.transform.schema.xs.XsNode;
 
 import java.util.Random;
 
-@CommandExecutor(name = "sample-avro")
+@Command(name = "sample-avro")
 public class SampleAvroCommand extends SchemaCommand {
 
     @Override
