@@ -3,8 +3,8 @@ package soya.framework.kafka.commands;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
-import soya.framework.commons.commandline.Command;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
 
 import java.util.Collection;
 import java.util.List;

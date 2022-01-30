@@ -3,7 +3,7 @@ package soya.framework.tool.commands;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.xmlbeans.SchemaTypeSystem;
-import soya.framework.commons.commandline.Command;
+import soya.framework.commons.cli.Command;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.avro.SampleAvroGenerator;
 import soya.framework.transform.schema.converter.XsdToAvsc;

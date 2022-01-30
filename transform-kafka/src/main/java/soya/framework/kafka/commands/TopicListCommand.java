@@ -1,8 +1,8 @@
 package soya.framework.kafka.commands;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import soya.framework.commons.commandline.Command;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
 
 import java.util.ArrayList;
 import java.util.Collections;

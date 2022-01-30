@@ -3,10 +3,9 @@ package soya.framework.commons.markdown;
 import org.commonmark.node.Node;
 import org.commonmark.node.Visitor;
 import org.commonmark.parser.Parser;
-import soya.framework.commons.commandline.CommandCallable;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.CommandCallable;
+import soya.framework.commons.cli.CommandOption;
 
-import java.io.File;
 import java.io.FileReader;
 
 public abstract class MarkdownCommand implements CommandCallable {

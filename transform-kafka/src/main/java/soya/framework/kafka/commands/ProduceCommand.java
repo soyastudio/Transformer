@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.Headers;
-import soya.framework.commons.commandline.Command;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;

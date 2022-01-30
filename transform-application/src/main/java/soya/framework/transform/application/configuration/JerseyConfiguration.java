@@ -7,7 +7,6 @@ import io.swagger.models.Swagger;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
-import soya.framework.transform.application.api.BusinessObjectResource;
 
 import javax.ws.rs.ApplicationPath;
 

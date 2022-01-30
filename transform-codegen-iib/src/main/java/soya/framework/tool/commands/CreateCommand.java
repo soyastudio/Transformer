@@ -1,6 +1,6 @@
 package soya.framework.tool.commands;
 
-import soya.framework.commons.commandline.Command;
+import soya.framework.commons.cli.Command;
 
 @Command(name = "create")
 public class CreateCommand extends BusinessObjectCommand {

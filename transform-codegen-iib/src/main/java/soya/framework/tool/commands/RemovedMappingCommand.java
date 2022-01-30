@@ -1,6 +1,6 @@
 package soya.framework.tool.commands;
 
-import soya.framework.commons.commandline.Command;
+import soya.framework.commons.cli.Command;
 import soya.framework.commons.util.CodeBuilder;
 
 import java.io.File;

@@ -9,9 +9,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Component
-@Path("/transform")
-@Api(value = "Transform Service")
+//@Component
+//@Path("/transform")
+//@Api(value = "Transform Service")
 public class TransformResource {
 
     @Autowired

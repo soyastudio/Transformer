@@ -1,7 +1,7 @@
 package soya.framework.tool.commands;
 
-import soya.framework.commons.commandline.CommandCallable;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.CommandCallable;
+import soya.framework.commons.cli.CommandOption;
 
 import java.io.File;
 

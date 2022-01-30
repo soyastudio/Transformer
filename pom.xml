@@ -239,13 +239,13 @@
     <modules>
         <module>transform-commons</module>
         <module>transform-commons-poi</module>
+        <module>transform-commons-tool</module>
 
         <module>transform-schema</module>
 
         <module>transform-core</module>
         <module>transform-avro</module>
 
-        <module>transform-commandlines</module>
         <module>transform-codegen-iib</module>
         <module>transform-kafka</module>
 

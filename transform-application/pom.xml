@@ -29,6 +29,12 @@
 
         <dependency>
             <groupId>soya.framework.transform</groupId>
+            <artifactId>transform-commons-tool</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>soya.framework.transform</groupId>
             <artifactId>transform-schema</artifactId>
             <version>${project.version}</version>
         </dependency>

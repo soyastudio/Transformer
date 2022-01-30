@@ -1,7 +1,7 @@
 package soya.framework.tool.commands;
 
-import soya.framework.commons.commandline.Command;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
 
 @Command(name = "version")
 public class VersionCommand extends BusinessObjectCommand {

@@ -1,7 +1,7 @@
 package soya.framework.tool.commands;
 
 import org.apache.xmlbeans.SchemaTypeSystem;
-import soya.framework.commons.commandline.Command;
+import soya.framework.commons.cli.Command;
 import soya.framework.commons.util.CodeBuilder;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;

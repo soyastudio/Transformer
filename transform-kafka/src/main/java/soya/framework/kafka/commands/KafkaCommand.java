@@ -17,10 +17,9 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
-import soya.framework.commons.commandline.CommandCallable;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.CommandCallable;
+import soya.framework.commons.cli.CommandOption;
 import soya.framework.kafka.KafkaClientFactory;
-import soya.framework.kafka.KafkaCommands;
 
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;

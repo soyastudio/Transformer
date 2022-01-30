@@ -4,9 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import soya.framework.commons.commandline.CommandCallable;
-import soya.framework.commons.commandline.Command;
-import soya.framework.commons.commandline.CommandOption;
+import soya.framework.commons.cli.CommandCallable;
+import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
