@@ -9,13 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Flow {
+
     public final static Callback LOGGER = new LoggerCallback();
 
     private final static Evaluator DEFAULT_EVALUATOR = new DefaultEvaluator();
 
     private final CommandExecutor executor;
 
-    private List<Task> tasks = new ArrayList<>();
+    private List<Task> tasks;
 
     private Flow(CommandExecutor executor, List<Task> tasks) {
         this.executor = executor;
@@ -23,13 +24,13 @@ public class Flow {
     }
 
     public void execute(Callback callback, ExceptionHandler exceptionHandler) {
-        DefaultSession session = new DefaultSession();
+        DefaultSession session = new DefaultSession(executor.context().properties());
         for (Task task : tasks) {
             session.executed.add(task.configuration.getName());
             session.cursor = task.configuration.getName();
 
             String cmd = task.configuration.getCommand();
-            String[] args = task.compiler.compile(task.configuration, session, executor.context());
+            String[] args = task.compiler.compile(task.configuration, session);
 
             Future<String> future = executor.submit(cmd, args);
 
@@ -94,6 +95,8 @@ public class Flow {
 
         long startTime();
 
+        Properties properties();
+
         String cursor();
 
         String[] executed();
@@ -117,11 +120,11 @@ public class Flow {
 
         void evaluator(String option, String exp, Evaluator evaluator);
 
-        String evaluate(String option, Session session, CommandExecutor.Context context);
+        String evaluate(String option, Session session);
     }
 
     public interface Compiler {
-        String[] compile(Configuration configuration, Session session, CommandExecutor.Context context);
+        String[] compile(Configuration configuration, Session session);
     }
 
     public interface Callback {
@@ -133,7 +136,7 @@ public class Flow {
     }
 
     public interface Evaluator {
-        String evaluate(String exp, Session session, Properties properties);
+        String evaluate(String exp, Session session);
     }
 
     public static class FlowBuilder {
@@ -198,6 +201,7 @@ public class Flow {
     static class DefaultSession implements Session {
         private final String id;
         private final long startTime;
+        private final Properties properties = new Properties();
 
         private List<String> executed = new ArrayList<>();
         private String cursor;
@@ -205,9 +209,11 @@ public class Flow {
 
         private Map<String, Object> attributes = new HashMap<>();
 
-        private DefaultSession() {
+        private DefaultSession(Properties properties) {
             this.id = UUID.randomUUID().toString();
             this.startTime = System.currentTimeMillis();
+
+            this.properties.putAll(properties);
         }
 
         @Override
@@ -218,6 +224,11 @@ public class Flow {
         @Override
         public long startTime() {
             return startTime;
+        }
+
+        @Override
+        public Properties properties() {
+            return properties;
         }
 
         @Override
@@ -313,22 +324,22 @@ public class Flow {
         }
 
         @Override
-        public String evaluate(String option, Session session, CommandExecutor.Context context) {
+        public String evaluate(String option, Session session) {
             String exp = expressions.get(option);
             Evaluator evaluator = evaluators.containsKey(option) ? evaluators.get(option) : DEFAULT_EVALUATOR;
 
-            return evaluator.evaluate(exp, session, context.properties());
+            return evaluator.evaluate(exp, session);
         }
     }
 
     static class DefaultCompiler implements Compiler {
 
         @Override
-        public String[] compile(Configuration configuration, Session session, CommandExecutor.Context context) {
+        public String[] compile(Configuration configuration, Session session) {
             List<String> list = new ArrayList<>();
             configuration.getOptions().getOptions().forEach(e -> {
                 String opt = e.getOpt();
-                String value = configuration.evaluate(opt, session, context);
+                String value = configuration.evaluate(opt, session);
                 if (value != null) {
                     list.add("-" + opt);
                     list.add(value);
@@ -345,7 +356,7 @@ public class Flow {
         private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
         @Override
-        public String evaluate(String exp, Session session, Properties properties) {
+        public String evaluate(String exp, Session session) {
             String expression = exp;
 
             if (expression != null && expression.contains("${")) {
@@ -353,7 +364,7 @@ public class Flow {
                 Matcher matcher = pattern.matcher(expression);
                 while (matcher.find()) {
                     String token = matcher.group(1);
-                    String value = getValue(token, session, properties);
+                    String value = getValue(token, session);
                     matcher.appendReplacement(buffer, value);
                 }
                 matcher.appendTail(buffer);
@@ -364,7 +375,8 @@ public class Flow {
             return expression;
         }
 
-        private String getValue(String attribute, Session session, Properties properties) {
+        private String getValue(String attribute, Session session) {
+            Properties properties = session.properties();
 
             if (attribute.startsWith(".")) {
                 return session.getResult(attribute.substring(1));

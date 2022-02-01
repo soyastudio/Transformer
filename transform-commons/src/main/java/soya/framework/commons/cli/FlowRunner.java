@@ -16,12 +16,12 @@ public class FlowRunner {
 
         builder.addTask(Flow.Task.builder(ResourceExtractCommand.class)
                 .name("input")
-                .setOption("s", "C:\\github\\SoyaCoder\\website\\markdown\\apache_avro_overview.md")
+                .setOption("s", "C:/github/SoyaCoder/website/markdown/apache_avro_overview.md")
                 .setCallback(Flow.LOGGER)
                 .create());
 
         builder.addTask(Flow.Task.builder(Base64EncodeCommand.class)
-                .name("two")
+                .name("encode")
                 .setOption("s", "${.input}")
                 .setCallback(Flow.LOGGER)
                 .create());
@@ -29,7 +29,7 @@ public class FlowRunner {
         Flow flow = builder.create();
 
         flow.execute(session -> {
-
+                    System.out.println("============= " + session.properties().getProperty("workspace.home"));
                 },
                 (cause, session) -> {
 

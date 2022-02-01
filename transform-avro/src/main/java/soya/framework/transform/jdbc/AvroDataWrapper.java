@@ -5,6 +5,7 @@ import org.apache.avro.generic.GenericData;
 import org.apache.commons.beanutils.RowSetDynaClass;
 
 public class AvroDataWrapper {
+
     private Schema schema;
     private GenericData.Array<GenericData.Record> array;
 
