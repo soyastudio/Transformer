@@ -15,9 +15,9 @@ import javax.ws.rs.core.Response;
 @Component
 @Path("/kafka")
 @Api(value = "Kafka Command Service")
-public class KafkaCommandResource extends CommandDispatcher {
+public class KafkaResource extends CommandDispatcher {
 
-    public KafkaCommandResource(@Autowired
+    public KafkaResource(@Autowired
                                 @Qualifier("KafkaCommandDelegate")
                                         CommandExecutor delegate) {
         super(delegate);

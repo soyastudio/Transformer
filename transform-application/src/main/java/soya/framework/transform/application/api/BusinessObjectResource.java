@@ -15,9 +15,9 @@ import javax.ws.rs.core.Response;
 @Component
 @Path("/bod")
 @Api(value = "Business Object Development Service")
-public class BusinessObjectCommandResource extends CommandDispatcher {
+public class BusinessObjectResource extends CommandDispatcher {
 
-    public BusinessObjectCommandResource(@Autowired
+    public BusinessObjectResource(@Autowired
                                          @Qualifier("BusinessObjectCommandExecutor")
                                                  CommandExecutor executor) {
         super(executor);

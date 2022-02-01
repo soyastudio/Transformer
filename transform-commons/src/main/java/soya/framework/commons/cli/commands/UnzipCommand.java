@@ -12,10 +12,10 @@ import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 
 @Command(name = "unzip")
-public class UnzipCommand extends MessageCommand {
+public class UnzipCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {
-        byte[] encoded = message.getBytes(Charset.defaultCharset());
+        byte[] encoded = contents().getBytes(Charset.defaultCharset());
         byte[] compressed = Base64.getDecoder().decode(encoded);
 
         if ((compressed == null) || (compressed.length == 0)) {

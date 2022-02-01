@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import soya.framework.commons.cli.CommandExecutor;
-import soya.framework.commons.cli.commands.MessageCommand;
+import soya.framework.commons.cli.commands.ResourceCommand;
 import soya.framework.tool.codegen.JavaCodegenCommand;
 import soya.framework.kafka.KafkaClientFactory;
 import soya.framework.kafka.commands.KafkaCommand;
@@ -31,8 +31,8 @@ public class CommandExecutorConfiguration {
 
     @Bean("CommonCommandExecutor")
     CommandExecutor commonCommandExecutor(ExecutorService executorService) {
-        return CommandExecutor.builder(MessageCommand.class)
-                .scan(MessageCommand.class.getPackage().getName())
+        return CommandExecutor.builder(ResourceCommand.class)
+                .scan(ResourceCommand.class.getPackage().getName())
                 .setExecutorService(executorService)
                 .create();
     }

@@ -7,7 +7,6 @@ import com.samskivert.mustache.Mustache;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import soya.framework.commons.cli2.CommandLines;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -32,18 +31,6 @@ public class ProjectCommands {
         template = GSON.fromJson(reader, Project.class);
     }
 
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "b",
-                            required = true,
-                            desc = "Business Object Name"),
-                    @CommandLines.Opt(option = "w",
-                            required = true,
-                            desc = "Workspace directory")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
     public static String create(CommandLine cmd) throws Exception {
         File base = new File(cmd.getOptionValue("w"));
         String bod = cmd.getOptionValue("b");
@@ -78,18 +65,6 @@ public class ProjectCommands {
         }
     }
 
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "b",
-                            required = true,
-                            desc = "Business Object Name"),
-                    @CommandLines.Opt(option = "w",
-                            required = true,
-                            desc = "Workspace directory")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
     public static String get(CommandLine cmd) throws Exception {
         File base = new File(cmd.getOptionValue("w"));
         String bod = cmd.getOptionValue("b");
@@ -107,18 +82,6 @@ public class ProjectCommands {
         return GSON.toJson(project);
     }
 
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "b",
-                            required = true,
-                            desc = "Business Object Name"),
-                    @CommandLines.Opt(option = "w",
-                            required = true,
-                            desc = "Workspace directory")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
     public static String readme(CommandLine cmd) throws Exception {
         File base = new File(cmd.getOptionValue("w"));
         String bod = cmd.getOptionValue("b");
@@ -129,41 +92,11 @@ public class ProjectCommands {
         return IOUtils.toString(new FileInputStream(readme), Charset.defaultCharset());
     }
 
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "b",
-                            required = true,
-                            desc = "Business Object Name"),
-                    @CommandLines.Opt(option = "v",
-                            required = true,
-                            desc = "Version"),
-                    @CommandLines.Opt(option = "w",
-                            required = true,
-                            desc = "Workspace directory")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
     public static String version(CommandLine cmd) throws Exception {
         System.out.println("================ versioning...");
         return null;
     }
 
-    @CommandLines.Command(
-            desc = "Convert xml to json against xml or avro schema",
-            options = {
-                    @CommandLines.Opt(option = "b",
-                            required = true,
-                            desc = "Business Object Name"),
-                    @CommandLines.Opt(option = "v",
-                            required = true,
-                            desc = "Version"),
-                    @CommandLines.Opt(option = "w",
-                            required = true,
-                            desc = "Workspace directory")
-            },
-            cases = {"-a xmlToJson -x SCHEMA_FILE_PATH -i INPUT -o OUTPUT_FILE"}
-    )
     public static String cutoff(CommandLine cmd) throws Exception {
 
         System.out.println("================ cutoff...");

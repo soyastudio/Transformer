@@ -5,9 +5,9 @@ import soya.framework.commons.cli.Command;
 import java.util.Base64;
 
 @Command(name = "base64decode")
-public class Base64DecodeCommand extends MessageCommand {
+public class Base64DecodeCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {
-        return new String(Base64.getDecoder().decode(message));
+        return new String(Base64.getDecoder().decode(contents()));
     }
 }

@@ -6,9 +6,9 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 @Command(name = "base64encode")
-public class Base64EncodeCommand extends MessageCommand {
+public class Base64EncodeCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {
-        return Base64.getEncoder().encodeToString(message.getBytes(Charset.defaultCharset()));
+        return Base64.getEncoder().encodeToString(contents().getBytes(Charset.defaultCharset()));
     }
 }

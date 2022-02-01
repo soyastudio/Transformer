@@ -6,6 +6,6 @@ import soya.framework.commons.cli.Command;
 public class AESEncryptCommand extends AESCommand {
     @Override
     public String call() throws Exception {
-        return this.encrypt(message, secret);
+        return this.encrypt(contents(), secret);
     }
 }

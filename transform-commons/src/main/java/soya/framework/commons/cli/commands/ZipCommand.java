@@ -9,16 +9,16 @@ import java.util.Base64;
 import java.util.zip.GZIPOutputStream;
 
 @Command(name = "zip")
-public class ZipCommand extends MessageCommand {
+public class ZipCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {
-        if ((message == null) || (message.length() == 0)) {
+        if ((contents() == null) || (contents().length() == 0)) {
             throw new IllegalArgumentException("Cannot zip null or empty string");
         }
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
-                gzipOutputStream.write(message.getBytes(Charset.defaultCharset()));
+                gzipOutputStream.write(contents().getBytes(Charset.defaultCharset()));
             }
 
             byte[] encoded = Base64.getEncoder().encode(byteArrayOutputStream.toByteArray());

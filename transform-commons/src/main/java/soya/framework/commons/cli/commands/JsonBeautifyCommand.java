@@ -5,9 +5,9 @@ import com.google.gson.JsonParser;
 import soya.framework.commons.cli.Command;
 
 @Command(name = "json-format")
-public class JsonBeautifyCommand extends MessageCommand {
+public class JsonBeautifyCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(JsonParser.parseString(message));
+        return new GsonBuilder().setPrettyPrinting().create().toJson(JsonParser.parseString(contents()));
     }
 }

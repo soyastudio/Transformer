@@ -5,11 +5,16 @@ import org.apache.commons.cli.Options;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Flow {
+    public final static Callback LOGGER = new LoggerCallback();
+
     private final static Evaluator DEFAULT_EVALUATOR = new DefaultEvaluator();
 
     private final CommandExecutor executor;
+
     private List<Task> tasks = new ArrayList<>();
 
     private Flow(CommandExecutor executor, List<Task> tasks) {
@@ -17,8 +22,8 @@ public class Flow {
         this.tasks = tasks;
     }
 
-    public void execute(String input, Callback callback) {
-        DefaultSession session = new DefaultSession(input);
+    public void execute(Callback callback, ExceptionHandler exceptionHandler) {
+        DefaultSession session = new DefaultSession();
         for (Task task : tasks) {
             session.executed.add(task.configuration.getName());
             session.cursor = task.configuration.getName();
@@ -32,19 +37,19 @@ public class Flow {
                 try {
                     Thread.sleep(50l);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    session.onException(e, exceptionHandler);
                 }
             }
 
             try {
                 String result = future.get();
-                session.onSuccess(result, task.callback);
+                session.onSuccess(task.getName(), result, task.callback);
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                session.onException(e, exceptionHandler);
 
             } catch (ExecutionException e) {
-                session.onException(e, task.exceptionHandler);
+                session.onException(e, exceptionHandler);
             }
 
         }
@@ -63,13 +68,11 @@ public class Flow {
 
         private Compiler compiler;
         private Callback callback;
-        private ExceptionHandler exceptionHandler;
 
-        public Task(Configuration configuration, Compiler compiler, Callback callback, ExceptionHandler exceptionHandler) {
+        public Task(Configuration configuration, Compiler compiler, Callback callback) {
             this.configuration = configuration;
             this.compiler = compiler;
             this.callback = callback;
-            this.exceptionHandler = exceptionHandler;
         }
 
         public String getName() {
@@ -87,17 +90,19 @@ public class Flow {
     }
 
     public interface Session {
-        String input();
+        String getId();
 
-        String output();
-
-        Exception exception();
+        long startTime();
 
         String cursor();
 
         String[] executed();
 
         String getResult(String taskName);
+
+        Object getAttribute(String name);
+
+        void setAttribute(String name, Object value);
 
     }
 
@@ -124,9 +129,7 @@ public class Flow {
     }
 
     public interface ExceptionHandler {
-        void onException(Exception exception, Session session);
-
-        void onException(Throwable cause);
+        void onException(Throwable cause, Session session);
     }
 
     public interface Evaluator {
@@ -134,6 +137,7 @@ public class Flow {
     }
 
     public static class FlowBuilder {
+
         private CommandExecutor executor;
         private List<Task> tasks = new ArrayList<>();
 
@@ -156,7 +160,6 @@ public class Flow {
         private Configuration configuration;
         private Compiler compiler;
         private Callback callback;
-        private ExceptionHandler exceptionHandler;
 
         private TaskBuilder(Class<? extends CommandCallable> commandType) {
             this.commandType = commandType;
@@ -168,13 +171,18 @@ public class Flow {
             return this;
         }
 
-        public TaskBuilder evaluator(String option, String value) {
+        public TaskBuilder setOption(String option, String value) {
             configuration.evaluator(option, value);
             return this;
         }
 
-        public TaskBuilder evaluator(String option, String exp, Evaluator evaluator) {
+        public TaskBuilder setOption(String option, String exp, Evaluator evaluator) {
             configuration.evaluator(option, exp, evaluator);
+            return this;
+        }
+
+        public TaskBuilder setCallback(Callback callback) {
+            this.callback = callback;
             return this;
         }
 
@@ -183,36 +191,33 @@ public class Flow {
                 this.compiler = new DefaultCompiler();
             }
 
-            return new Task(configuration, compiler, callback, exceptionHandler);
+            return new Task(configuration, compiler, callback);
         }
     }
 
-    private static class DefaultSession implements Session {
-        private final String input;
-        private String output;
-        private Exception exception;
+    static class DefaultSession implements Session {
+        private final String id;
+        private final long startTime;
 
         private List<String> executed = new ArrayList<>();
         private String cursor;
         private Map<String, String> results = new LinkedHashMap<>();
 
-        public DefaultSession(String input) {
-            this.input = input;
+        private Map<String, Object> attributes = new HashMap<>();
+
+        private DefaultSession() {
+            this.id = UUID.randomUUID().toString();
+            this.startTime = System.currentTimeMillis();
         }
 
         @Override
-        public String input() {
-            return this.input;
+        public String getId() {
+            return id;
         }
 
         @Override
-        public String output() {
-            return output;
-        }
-
-        @Override
-        public Exception exception() {
-            return exception;
+        public long startTime() {
+            return startTime;
         }
 
         @Override
@@ -225,28 +230,42 @@ public class Flow {
             return executed.toArray(new String[executed.size()]);
         }
 
-
         @Override
         public String getResult(String taskName) {
             return results.get(taskName);
         }
 
-        private void onSuccess(String result, Callback callback) {
-            results.put(cursor, result);
+        @Override
+        public Object getAttribute(String name) {
+            return attributes.get(name);
+        }
+
+        @Override
+        public void setAttribute(String name, Object value) {
+            if (value != null) {
+                attributes.put(name, value);
+
+            } else {
+                attributes.remove(name);
+            }
+
+        }
+
+        private void onSuccess(String task, String result, Callback callback) {
+            results.put(task, result);
             if (callback != null) {
                 callback.onSuccess(this);
             }
         }
 
         private void onException(Exception e, ExceptionHandler exceptionHandler) {
-            this.exception = e;
             if (exceptionHandler != null) {
                 exceptionHandler.onException(e, this);
             }
         }
     }
 
-    private static class DefaultConfiguration implements Configuration {
+    static class DefaultConfiguration implements Configuration {
         private Class<? extends CommandCallable> commandType;
         private String name;
         private String command;
@@ -255,7 +274,7 @@ public class Flow {
         private Map<String, String> expressions = new HashMap<>();
         private Map<String, Evaluator> evaluators = new HashMap<>();
 
-        public DefaultConfiguration(Class<? extends CommandCallable> commandType) {
+        DefaultConfiguration(Class<? extends CommandCallable> commandType) {
             this.commandType = commandType;
             Command command = commandType.getAnnotation(Command.class);
             this.command = command.name();
@@ -278,11 +297,13 @@ public class Flow {
             return options;
         }
 
+        @Override
         public void evaluator(String option, String exp) {
             this.expressions.put(option, exp);
 
         }
 
+        @Override
         public void evaluator(String option, String exp, Evaluator evaluator) {
             this.expressions.put(option, exp);
             if (evaluator != null) {
@@ -301,14 +322,18 @@ public class Flow {
     }
 
     static class DefaultCompiler implements Compiler {
+
         @Override
         public String[] compile(Configuration configuration, Session session, CommandExecutor.Context context) {
             List<String> list = new ArrayList<>();
             configuration.getOptions().getOptions().forEach(e -> {
-                list.add("-" + e.getOpt());
+                String opt = e.getOpt();
+                String value = configuration.evaluate(opt, session, context);
+                if (value != null) {
+                    list.add("-" + opt);
+                    list.add(value);
 
-                list.add(configuration.evaluate(e.getOpt(), session, context));
-
+                }
             });
 
             return list.toArray(new String[list.size()]);
@@ -316,17 +341,52 @@ public class Flow {
     }
 
     static class DefaultEvaluator implements Evaluator {
+        private final String regex = "\\$\\{([A-Za-z_.][A-Za-z0-9_.]*)}";
+        private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
         @Override
         public String evaluate(String exp, Session session, Properties properties) {
-            String token = exp;
-            if(exp.contains("${")) {
+            String expression = exp;
 
+            if (expression != null && expression.contains("${")) {
+                StringBuffer buffer = new StringBuffer();
+                Matcher matcher = pattern.matcher(expression);
+                while (matcher.find()) {
+                    String token = matcher.group(1);
+                    String value = getValue(token, session, properties);
+                    matcher.appendReplacement(buffer, value);
+                }
+                matcher.appendTail(buffer);
 
+                expression = buffer.toString();
+            }
+
+            return expression;
+        }
+
+        private String getValue(String attribute, Session session, Properties properties) {
+
+            if (attribute.startsWith(".")) {
+                return session.getResult(attribute.substring(1));
+
+            } else if (properties.getProperty(attribute) != null) {
+                return properties.getProperty(attribute);
+
+            } else if (System.getProperty(attribute) != null) {
+                return System.getProperty(attribute);
 
             }
 
-            return token;
+
+            throw new IllegalArgumentException("Cannot find attribute on current context: " + attribute);
+        }
+    }
+
+    static class LoggerCallback implements Callback {
+
+        @Override
+        public void onSuccess(Session session) {
+            System.out.println(new Date(session.startTime()) + "[" + session.getId() + "] " + session.cursor());
         }
     }
 }

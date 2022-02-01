@@ -17,6 +17,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
         <commons-lang3-version>3.9</commons-lang3-version>
+        <commons-text>1.9</commons-text>
         <commons-io-version>2.6</commons-io-version>
         <commons-beanutils-version>1.9.4</commons-beanutils-version>
         <commons-codec-version>1.15</commons-codec-version>
@@ -50,7 +51,6 @@
         <jodatime-version>2.7</jodatime-version>
         <joda-money.version>1.0.1</joda-money.version>
 
-        <codesorcerer.version>2.4.4</codesorcerer.version>
         <javapoet.version>1.9.0</javapoet.version>
 
         <fuselet.version>0.0.8</fuselet.version>
@@ -65,6 +65,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
@@ -239,7 +245,7 @@
     <modules>
         <module>transform-commons</module>
         <module>transform-commons-poi</module>
-        <module>transform-commons-tool</module>
+        <module>transform-tool</module>
 
         <module>transform-schema</module>
 

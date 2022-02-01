@@ -8,7 +8,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
 
-public abstract class AESCommand extends MessageCommand {
+public abstract class AESCommand extends ResourceCommand {
 
     public static final String DIGEST_ALGORITHM_MD5 = "MD5";
     public static final String DIGEST_ALGORITHM_SHA1 = "SHA-1";

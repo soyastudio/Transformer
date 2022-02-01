@@ -7,6 +7,6 @@ public class AESDecryptCommand extends AESCommand {
 
     @Override
     public String call() throws Exception {
-        return decrypt(message, secret);
+        return decrypt(contents(), secret);
     }
 }

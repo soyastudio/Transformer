@@ -7,14 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Command(name = "mustache-attribute")
-public class MustacheAttributesCommand extends MessageCommand {
+public class MustacheAttributesCommand extends ResourceCommand {
     private final String regex = "\\{\\{([A-Za-z_][A-Za-z0-9_.]*)}}";
     private final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
     @Override
     public String call() throws Exception {
         Set<String> set = new HashSet<>();
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcher = pattern.matcher(contents());
         while (matcher.find()) {
             String token = matcher.group();
             set.add(token);
