@@ -86,6 +86,7 @@ public class Flow {
     }
 
     private void execute(DefaultSession session, Callback callback) {
+        long timestamp = System.currentTimeMillis();
         for (Task task : tasks) {
             session.executed.add(task.configuration.getName());
             session.cursor = task.configuration.getName();
@@ -125,6 +126,8 @@ public class Flow {
                 session.onException(e, exceptionHandler);
             }
         }
+
+        System.out.println("Flow executed in " + (System.currentTimeMillis() - timestamp) + "ms.");
     }
 
     public static FlowBuilder builder() {
@@ -535,14 +538,6 @@ public class Flow {
 
 
             throw new IllegalArgumentException("Cannot find attribute on current context: " + attribute);
-        }
-    }
-
-    static class LoggerCallback implements Callback {
-
-        @Override
-        public void onSuccess(Session session) {
-            System.out.println(new Date(session.startTime()) + "[" + session.getId() + "] " + session.cursor());
         }
     }
 

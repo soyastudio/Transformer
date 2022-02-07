@@ -2,7 +2,6 @@ package soya.framework.tool;
 
 import soya.framework.commons.cli.CommandExecutor;
 import soya.framework.commons.cli.Flow;
-import soya.framework.commons.cli.commands.EchoCallback;
 import soya.framework.commons.cli.commands.ResourceCommand;
 import soya.framework.commons.cli.commands.SessionInfoCallback;
 import soya.framework.kafka.KafkaClientFactory;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
 public class FlowRunner {
     public static void main(String[] args) throws Exception {
@@ -35,8 +35,10 @@ public class FlowRunner {
         Flow flow = builder.create();
 
         flow.execute(Flow.callbacks()
-                .add(new SessionInfoCallback())
-                .add(new EchoCallback("${.validate}"))
+                .add(SessionInfoCallback
+                        .instance()
+                        .printProperties()
+                        .printTaskResult("validate"))
         );
 
         System.exit(0);
