@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-@Command(name = "mapping")
+@Command(name = "mapping", uri = "bod://xlsx-mapping")
 public class XlsxMappingsCommand extends BusinessObjectCommand {
 
     @CommandOption(option = "f", longOption = "file")
@@ -21,10 +21,12 @@ public class XlsxMappingsCommand extends BusinessObjectCommand {
     @CommandOption(option = "s", longOption = "s")
     protected String mappingSheet;
 
+    protected Map<String, Mapping> mappings;
+
     @Override
     protected String execute() throws Exception {
         File xslx = new File(workDir, "mappings.xlsx");
-        Map<String, Mapping> mappings = load(xslx, null);
+        mappings = load(xslx, null);
 
         CodeBuilder builder = CodeBuilder.newInstance();
         mappings.entrySet().forEach(e -> {
@@ -118,12 +120,11 @@ public class XlsxMappingsCommand extends BusinessObjectCommand {
     }
 
     static class Mapping {
-
-        private String type;
-        private String cardinality;
-        private String rule;
-        private String source;
-        private String version;
+        String type;
+        String cardinality;
+        String rule;
+        String source;
+        String version;
 
         private boolean todo;
         private String assign;

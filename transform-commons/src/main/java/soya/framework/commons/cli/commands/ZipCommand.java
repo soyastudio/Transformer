@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.zip.GZIPOutputStream;
 
-@Command(name = "zip")
+@Command(name = "gzip", uri = "resource://gzip")
 public class ZipCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {

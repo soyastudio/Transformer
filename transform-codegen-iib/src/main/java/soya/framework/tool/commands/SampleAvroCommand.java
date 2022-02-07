@@ -1,5 +1,6 @@
 package soya.framework.tool.commands;
 
+import com.google.gson.JsonParser;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.xmlbeans.SchemaTypeSystem;
@@ -11,7 +12,7 @@ import soya.framework.transform.schema.xs.XsNode;
 
 import java.util.Random;
 
-@Command(name = "sample-avro")
+@Command(name = "sample-avro", uri = "bod://sample-avro")
 public class SampleAvroCommand extends SchemaCommand {
 
     @Override
@@ -20,6 +21,6 @@ public class SampleAvroCommand extends SchemaCommand {
         Object result = new SampleAvroGenerator(schema, new Random(), 0).generate();
         GenericRecord genericRecord = (GenericRecord) result;
 
-        return genericRecord.toString();
+        return GSON.toJson(JsonParser.parseString(genericRecord.toString()));
     }
 }

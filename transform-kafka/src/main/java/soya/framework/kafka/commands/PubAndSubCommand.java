@@ -1,12 +1,23 @@
 package soya.framework.kafka.commands;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import soya.framework.commons.cli.Command;
+import soya.framework.commons.cli.CommandOption;
+import soya.framework.commons.cli.Resources;
+import soya.framework.kafka.KafkaUtils;
 
-@Command(name = "pub-sub")
-public class PubAndSubCommand extends KafkaCommand{
+@Command(name = "pub-sub", uri = "kafka://pub-and-sub")
+public class PubAndSubCommand extends AbstractProduceCommand {
+
+    @CommandOption(option = "c", longOption = "consumeTopic", required = true)
+    protected String consumeTopic;
+
 
     @Override
     public String call() throws Exception {
-        return null;
+        String msg = Resources.get(message);
+        ConsumerRecord<String, byte[]> record = KafkaUtils.pubAndSub(produceTopic, msg, consumeTopic, timeout, environment);
+
+        return new String(record.value());
     }
 }

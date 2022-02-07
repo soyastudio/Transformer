@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
+    String uri();
+
     String name();
 
     String desc() default "TODO";

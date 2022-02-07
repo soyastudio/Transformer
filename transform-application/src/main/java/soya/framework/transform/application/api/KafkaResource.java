@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 public class KafkaResource extends CommandDispatcher {
 
     public KafkaResource(@Autowired
-                                @Qualifier("KafkaCommandDelegate")
+                                @Qualifier("KafkaCommandExecutor")
                                         CommandExecutor delegate) {
         super(delegate);
     }

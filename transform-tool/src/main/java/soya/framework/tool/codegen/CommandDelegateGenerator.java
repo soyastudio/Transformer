@@ -6,7 +6,7 @@ import soya.framework.commons.cli.Command;
 
 import javax.lang.model.element.Modifier;
 
-@Command(name = "command-delegate")
+
 public class CommandDelegateGenerator extends JavaPoetBuilderCommand {
 
     protected void defineClass(TypeSpec.Builder typeBuilder) {

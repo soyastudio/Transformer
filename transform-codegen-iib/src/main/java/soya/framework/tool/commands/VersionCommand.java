@@ -3,7 +3,7 @@ package soya.framework.tool.commands;
 import soya.framework.commons.cli.Command;
 import soya.framework.commons.cli.CommandOption;
 
-@Command(name = "version")
+@Command(name = "version-bod", uri = "bod://version")
 public class VersionCommand extends BusinessObjectCommand {
 
     @CommandOption(option = "v", longOption = "version", required = true)

@@ -1,11 +1,15 @@
 package soya.framework.tool.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import soya.framework.commons.cli.CommandCallable;
 import soya.framework.commons.cli.CommandOption;
 
 import java.io.File;
 
-public abstract class BusinessObjectCommand implements CommandCallable {
+public abstract class BusinessObjectCommand implements CommandCallable<String> {
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
     public static final String CMM_DIR = "CMM";
     public static final String DIMENSIONS_DIR = "Dimensions";
     public static final String TEMPLATES_DIR = "Templates";

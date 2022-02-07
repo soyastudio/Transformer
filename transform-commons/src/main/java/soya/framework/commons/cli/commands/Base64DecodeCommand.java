@@ -4,7 +4,7 @@ import soya.framework.commons.cli.Command;
 
 import java.util.Base64;
 
-@Command(name = "base64decode")
+@Command(name = "base64-decode", uri = "resource://base64-decode")
 public class Base64DecodeCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {

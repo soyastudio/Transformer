@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 public class CommonCommandResource extends CommandDispatcher {
 
     public CommonCommandResource(@Autowired
-                                 @Qualifier("CommonCommandDelegate")
+                                 @Qualifier("CommonCommandExecutor")
                                          CommandExecutor delegate) {
         super(delegate);
     }

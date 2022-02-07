@@ -4,7 +4,7 @@ import soya.framework.commons.cli.Command;
 import soya.framework.tool.codegen.JavaCodeBuilderCommand;
 import soya.framework.commons.util.CodeBuilder;
 
-@Command(name = "java-singleton")
+@Command(name = "java-singleton", uri = "codegen-java://pattern/singleton")
 public class SingletonGenerator extends JavaCodeBuilderCommand {
 
     @Override

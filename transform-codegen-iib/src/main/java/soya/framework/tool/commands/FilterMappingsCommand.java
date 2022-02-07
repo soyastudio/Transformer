@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
-@Command(name = "filter")
+@Command(name = "filter-mapping", uri = "bod://filter-mapping")
 public class FilterMappingsCommand extends XPathMappingsCommand {
 
     @CommandOption(option = "q", longOption = "query")

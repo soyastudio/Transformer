@@ -45,7 +45,6 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
     protected abstract String render(Map<String, Mapping> mappings);
 
     static class Mapping {
-
         String type;
         String cardinality;
         String rule;

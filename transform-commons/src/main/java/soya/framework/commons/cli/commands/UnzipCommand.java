@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 
-@Command(name = "unzip")
+@Command(name = "unzip", uri = "resource://unzip")
 public class UnzipCommand extends ResourceCommand {
     @Override
     public String call() throws Exception {

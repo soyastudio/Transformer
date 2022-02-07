@@ -9,7 +9,7 @@ import soya.framework.transform.schema.xs.XsNode;
 
 import java.util.Locale;
 
-@Command(name = "json-type-mappings")
+@Command(name = "bod-json-type-mappings", uri = "bod://json-type-mappings")
 public class XmlToJsonTypeCommand extends SchemaCommand {
 
     @Override

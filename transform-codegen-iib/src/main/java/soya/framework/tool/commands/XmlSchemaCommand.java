@@ -7,7 +7,7 @@ import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
 import soya.framework.transform.schema.xs.XsNode;
 
-@Command(name = "schema")
+@Command(name = "bod-schema", uri = "bod://schema")
 public class XmlSchemaCommand extends SchemaCommand {
 
     @Override

@@ -55,6 +55,7 @@ public class PropertiesUtils {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
+        properties.setProperty("workspace.home.xxx", "C:/github/Workshop/${AppBuild}");
         properties.setProperty("workspace.home", "C:/github/Workshop/AppBuild");
         properties.setProperty("workspace.cmm.dir", "${workspace.home}/CMM");
         properties.setProperty("workspace.avsc.dir", "${workspace.cmm.dir}/avsc");

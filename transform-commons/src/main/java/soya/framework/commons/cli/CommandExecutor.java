@@ -1,5 +1,6 @@
 package soya.framework.commons.cli;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
@@ -268,11 +269,17 @@ public final class CommandExecutor {
         }
 
         public Properties properties() {
-            return properties;
+            Properties props = new Properties();
+            props.putAll(properties);
+            return props;
         }
 
         public String property(String key) {
             return properties.getProperty(key);
+        }
+
+        public void setProperty(String key, String value) {
+            this.properties.setProperty(key, value);
         }
 
         public String[] commands() {
@@ -306,7 +313,8 @@ public final class CommandExecutor {
                     for (Field field : fields) {
                         CommandOption commandOption = field.getAnnotation(CommandOption.class);
                         if (commandOption != null && commandLine.hasOption(commandOption.option())) {
-                            String value = commandLine.getOptionValue(commandOption.option());
+                            String optionValue = commandLine.getOptionValue(commandOption.option());
+                            Object value = ConvertUtils.convert(optionValue, field.getType());
                             field.setAccessible(true);
                             field.set(command, value);
                         }
@@ -369,8 +377,14 @@ public final class CommandExecutor {
         }
 
         private void register(Class<? extends CommandCallable> cls) {
-            String name = cls.getAnnotation(Command.class).name();
+            Command command = cls.getAnnotation(Command.class);
+            String name = command.name();
+            String uri = command.uri();
+
             classMap.put(name, cls);
+            if(uri != null) {
+                classMap.put(uri, cls);
+            }
 
             Options options = new Options();
 

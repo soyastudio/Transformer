@@ -6,7 +6,7 @@ import soya.framework.commons.cli.Command;
 import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.xs.XsNode;
 
-@Command(name = "sample-xml")
+@Command(name = "sample-xml", uri = "bod://sample-xml")
 public class SampleXmlCommand extends SchemaCommand {
 
     @Override

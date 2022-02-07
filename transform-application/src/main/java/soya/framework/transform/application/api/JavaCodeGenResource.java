@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 @Api(value = "Java Code Generation Service")
 public class JavaCodeGenResource extends CommandDispatcher {
     public JavaCodeGenResource(@Autowired
-                               @Qualifier("JavaCodegenCommandDelegate")
+                               @Qualifier("JavaCodegenCommandExecutor")
                                        CommandExecutor delegate) {
         super(delegate);
     }

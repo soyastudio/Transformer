@@ -1,17 +1,10 @@
 package soya.framework.kafka.commands;
 
-import org.apache.kafka.clients.admin.AdminClient;
 import soya.framework.commons.cli.Command;
 import soya.framework.commons.cli.CommandOption;
+import soya.framework.kafka.KafkaUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-@Command(name = "topics")
+@Command(name = "kafka-topics", uri = "kafka://topics")
 public class TopicListCommand extends KafkaCommand {
 
     @CommandOption(option = "q", longOption = "query")
@@ -19,32 +12,6 @@ public class TopicListCommand extends KafkaCommand {
 
     @Override
     public String call() throws Exception {
-        List<String> results = new ArrayList<>();
-
-        AdminClient adminClient = createAdminClient();
-        Future<Set<String>> future = adminClient.listTopics().names();
-        while (!future.isDone()) {
-            try {
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        try {
-            List<String> topics = new ArrayList<>(future.get());
-            Collections.sort(topics);
-            topics.forEach(e -> {
-                if (query == null || e.startsWith(query)) {
-                    results.add(e);
-
-                }
-            });
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-
-        return GSON.toJson(results);
+        return GSON.toJson(KafkaUtils.topics(environment, query));
     }
 }

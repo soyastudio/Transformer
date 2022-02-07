@@ -35,12 +35,15 @@ import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-public abstract class KafkaCommand implements CommandCallable {
+public abstract class KafkaCommand implements CommandCallable<String> {
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @CommandOption(option = "e", longOption = "env")
     protected String environment = "LOCAL";
+
+    @CommandOption(option = "t", longOption = "timeout")
+    protected Long timeout = Long.valueOf(1000l);
 
     protected KafkaProducer createKafkaProducer() {
         return KafkaClientFactory.getInstance(environment).createKafkaProducer();
@@ -96,6 +99,7 @@ public abstract class KafkaCommand implements CommandCallable {
 
         return builder.create();
     }
+
     protected RecordMetadata send(KafkaProducer<String, byte[]> kafkaProducer, ProducerRecord<String, byte[]> record, long timeout) throws Exception {
 
         long timestamp = System.currentTimeMillis();

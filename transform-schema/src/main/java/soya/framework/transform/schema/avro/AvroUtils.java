@@ -19,9 +19,13 @@ import java.util.List;
 public class AvroUtils {
 
     private AvroUtils() {
+
     }
 
-    public static void writeAsJson(GenericRecord record, Schema schema, OutputStream outputStream) throws IOException {
+    public static void writeAsJson(GenericRecord record,
+                                   Schema schema,
+                                   OutputStream outputStream) throws IOException {
+
         GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<>(schema);
         Encoder encoder = EncoderFactory.get().jsonEncoder(schema, outputStream);
 
@@ -30,7 +34,10 @@ public class AvroUtils {
         outputStream.close();
     }
 
-    public static void writeAsBinary(GenericRecord record, Schema schema, OutputStream outputStream) throws IOException {
+    public static void writeAsBinary(GenericRecord record,
+                                     Schema schema,
+                                     OutputStream outputStream) throws IOException {
+
         GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<>(schema);
         Encoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
 

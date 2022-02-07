@@ -8,6 +8,8 @@ import java.io.File;
 
 public abstract class SchemaCommand extends BusinessObjectCommand {
 
+    protected KnowledgeTree<SchemaTypeSystem, XsNode> tree;
+
     @Override
     public String execute() throws Exception {
         File file = new File(cmmDir, "BOD/Get" + businessObject + ".xsd");
@@ -15,7 +17,7 @@ public abstract class SchemaCommand extends BusinessObjectCommand {
             throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
         }
 
-        KnowledgeTree<SchemaTypeSystem, XsNode> tree = XsUtils.createKnowledgeTree(file);
+        tree = XsUtils.createKnowledgeTree(file);
 
         return render(tree);
 

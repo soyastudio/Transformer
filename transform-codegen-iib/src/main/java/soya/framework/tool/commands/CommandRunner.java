@@ -146,7 +146,6 @@ public class CommandRunner {
 
     }
 
-    @Command(name = "help")
     static class HelpCommand implements CommandCallable {
 
         @Override

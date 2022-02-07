@@ -6,8 +6,8 @@ import soya.framework.commons.util.CodeBuilder;
 import java.io.File;
 import java.util.Map;
 
-@Command(name = "removed")
-public class RemovedMappingCommand extends XPathMappingsCommand {
+@Command(name = "deprecated-mappings", uri = "bod://deprecated-mappings")
+public class DeprecatedMappingsCommand extends XPathMappingsCommand {
 
     @Override
     protected File getFile() {

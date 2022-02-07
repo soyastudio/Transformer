@@ -6,7 +6,7 @@ import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.converter.XsdToAvsc;
 import soya.framework.transform.schema.xs.XsNode;
 
-@Command(name = "avsc")
+@Command(name = "bod-avsc", uri = "bod://avsc")
 public class XsdToAvscCommand extends SchemaCommand {
 
     @Override

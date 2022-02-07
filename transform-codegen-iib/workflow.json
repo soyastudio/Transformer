@@ -1,0 +1,26 @@
+{
+  "name": "xxx",
+  "properties": [
+    {
+      "key": "k1",
+      "value": "v1"
+    },
+    {
+      "key": "k2",
+      "value": "v2"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "task1",
+      "command": "kafka://produce",
+      "options": [
+        {
+          "opt": "p",
+          "value": ""
+        }
+      ],
+      "callback": []
+    }
+  ]
+}

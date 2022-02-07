@@ -2,7 +2,7 @@ package soya.framework.tool.commands;
 
 import soya.framework.commons.cli.Command;
 
-@Command(name = "create")
+@Command(name = "create-bod", uri = "bod://create")
 public class CreateCommand extends BusinessObjectCommand {
 
     @Override
