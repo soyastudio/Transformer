@@ -62,6 +62,13 @@
             <version>1.10.12</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-ri</artifactId>
+            <version>3.0.2</version>
+            <type>pom</type>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.samskivert/jmustache -->
         <dependency>
@@ -75,6 +82,13 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>4.9.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>2.9.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.squareup/javapoet -->

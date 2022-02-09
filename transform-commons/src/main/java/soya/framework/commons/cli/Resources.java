@@ -15,8 +15,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Resources {
+
+    private static final String regex = "\\$\\{([A-Za-z_.][A-Za-z0-9_.]*)}";
+    private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
     public enum ResourceType {
         URL, FILE, PLAIN;
@@ -151,6 +156,31 @@ public class Resources {
                 }
             }
         }
+    }
+
+    public static String evaluate(String exp, Properties properties) {
+
+        String expression = exp;
+
+        if (expression != null && expression.contains("${")) {
+            StringBuffer buffer = new StringBuffer();
+            Matcher matcher = pattern.matcher(expression);
+            while (matcher.find()) {
+                String token = matcher.group(1);
+                String value = token;
+                if(properties.getProperty(token) != null) {
+                    value = properties.getProperty(token);
+
+                } else if(System.getProperty(token) != null) {
+                    value = System.getProperty(token);
+                }
+                matcher.appendReplacement(buffer, value);
+            }
+            matcher.appendTail(buffer);
+            expression = buffer.toString();
+        }
+
+        return expression;
     }
 
 

@@ -2,15 +2,17 @@ package soya.framework.tool;
 
 import soya.framework.commons.cli.CommandExecutor;
 import soya.framework.commons.cli.Flow;
+import soya.framework.commons.cli.commands.DefaultFileSystemProcessChain;
 import soya.framework.commons.cli.commands.ResourceCommand;
 import soya.framework.commons.cli.commands.SessionInfoCallback;
 import soya.framework.kafka.KafkaClientFactory;
+import soya.framework.tool.ant.AntTaskChain;
+import soya.framework.tool.ant.JavaTaskProcessors;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.concurrent.Executors;
 
 public class FlowRunner {
     public static void main(String[] args) throws Exception {
@@ -39,6 +41,21 @@ public class FlowRunner {
                         .instance()
                         .printProperties()
                         .printTaskResult("validate"))
+
+                .add(DefaultFileSystemProcessChain
+                        .instance("C:/github/test")
+                        .mkdir("/src/more")
+                        .zip("/xxx", "/www.zip")
+                        .unzip("/www.zip", "YYY/A")
+                        .delete("YYY/A/src")
+                        .copyDir("xxx", "zzz")
+                        .copyFile("www.zip", "zzz/x.zip")
+                )
+
+                .add(AntTaskChain
+                        .instance("${workspace.home}")
+                        .addTask(JavaTaskProcessors
+                                .xjc("/CMM/BOD/GetGroceryOrder.xsd", "ant/codegen", "soya.framework.application.model")))
         );
 
         System.exit(0);

@@ -7,6 +7,11 @@ properties:
     value: GroceryOrder
 
 tasks:
+  - task: ant
+    uri: ant://mkdir
+    options:
+      d: ${workspace.home}/ant/test
+
   - task: cmm
     uri: bod://schema
     options:

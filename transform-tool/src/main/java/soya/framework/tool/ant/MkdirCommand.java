@@ -7,26 +7,14 @@ import soya.framework.commons.cli.CommandOption;
 import java.io.File;
 
 @Command(name = "ant-mkdir", uri = "ant://mkdir")
-public class MkdirCommand implements AntCommand {
+public class MkdirCommand extends AntTaskCommand<Mkdir> {
 
     @CommandOption(option = "d", longOption = "dir", required = true)
     protected String dir;
 
     @Override
-    public String call() throws Exception {
-
+    protected void init() {
         File directory = new File(dir);
-        Mkdir mkdir = new Mkdir();
-        mkdir.setDir(directory);
-        try {
-            mkdir.execute();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "success";
+        task.setDir(directory);
     }
-
-
 }
