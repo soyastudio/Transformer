@@ -20,7 +20,7 @@ public class FilterMappingsCommand extends XPathMappingsCommand {
     }
 
     @Override
-    protected String render(Map<String, Mapping> mappings) {
+    protected String render() {
         String token = expression == null? "::" : expression.toUpperCase(Locale.ROOT);
         CodeBuilder builder = CodeBuilder.newInstance();
         mappings.entrySet().forEach(e -> {

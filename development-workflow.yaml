@@ -1,0 +1,78 @@
+name: xxx
+properties:
+  - key: workspace.home
+    value: C:/github/Workshop/AppBuild
+
+  - key: bod.name
+    value: GroceryOrder
+
+tasks:
+  - task: cmm
+    uri: bod://schema
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: xml
+    uri: bod://sample-xml
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: avsc
+    uri: bod://avsc
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: avro
+    uri: bod://sample-avro
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: xlsx_mapping
+    uri: bod://xlsx-mapping
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: xpath_mapping
+    uri: bod://xpath-mapping
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: validate
+    uri: bod://validate
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+    callback: xxx
+
+  - task: construct
+    uri: bod://construct
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+      c: xpath-mappings.properties
+
+  - task: esql
+    uri: bod://esql
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+      c: xpath-mappings.properties
+      k: BROKER SCHEMA com.abs.oms.groceryorder
+      m: ESED_GroceryOrder_CMM_Transformer_Compute
+    callback: xxx
+
+callbacks:
+  - a:
+  - b:

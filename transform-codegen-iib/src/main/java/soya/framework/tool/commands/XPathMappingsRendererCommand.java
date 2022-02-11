@@ -15,7 +15,7 @@ public class XPathMappingsRendererCommand extends XPathMappingsCommand{
     }
 
     @Override
-    protected String render(Map<String, Mapping> mappings) {
+    protected String render() {
 
         CodeBuilder builder = CodeBuilder.newInstance();
         mappings.entrySet().forEach(e -> {

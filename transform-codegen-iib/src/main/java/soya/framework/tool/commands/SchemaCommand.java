@@ -12,17 +12,30 @@ public abstract class SchemaCommand extends BusinessObjectCommand {
 
     @Override
     public String execute() throws Exception {
+        loadXmlSchema();
+        loadMappings();
+        annotate();
+
+        return render();
+
+    }
+
+    protected void loadMappings() throws Exception {
+
+    }
+
+    protected void annotate() {
+
+    }
+
+    private void loadXmlSchema() {
         File file = new File(cmmDir, "BOD/Get" + businessObject + ".xsd");
         if (!file.exists()) {
             throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
         }
 
-        tree = XsUtils.createKnowledgeTree(file);
-
-        return render(tree);
-
-
+        this.tree = XsUtils.createKnowledgeTree(file);
     }
 
-    protected abstract String render(KnowledgeTree<SchemaTypeSystem, XsNode> tree);
+    protected abstract String render();
 }

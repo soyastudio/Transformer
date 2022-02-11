@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -68,7 +69,8 @@ public class DefaultFileSystemProcessChain extends FileSystemProcessChain {
 
         @Override
         public void process(File base, Flow.Session session) {
-            File directory = new File(base, path);
+            String dir = Resources.evaluate(path, session.properties());
+            File directory = new File(base, dir);
             directory.mkdirs();
 
         }
@@ -87,6 +89,20 @@ public class DefaultFileSystemProcessChain extends FileSystemProcessChain {
 
         @Override
         public void process(File base, Flow.Session session) {
+            String path = Resources.evaluate(fileName, session.properties());
+            String contents = (String) session.getResult(source);
+
+            try {
+                File file = new File(base, path);
+                if(!file.exists()) {
+                    file.createNewFile();
+                }
+
+                FileUtils.write(file, contents, Charset.defaultCharset());
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
         }
     }

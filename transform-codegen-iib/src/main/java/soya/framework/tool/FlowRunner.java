@@ -6,8 +6,6 @@ import soya.framework.commons.cli.commands.DefaultFileSystemProcessChain;
 import soya.framework.commons.cli.commands.ResourceCommand;
 import soya.framework.commons.cli.commands.SessionInfoCallback;
 import soya.framework.kafka.KafkaClientFactory;
-import soya.framework.tool.ant.AntTaskChain;
-import soya.framework.tool.ant.JavaTaskProcessors;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,32 +28,27 @@ public class FlowRunner {
         CommandExecutor executor = CommandExecutor.builder(ResourceCommand.class)
                 .scan(ResourceCommand.class.getPackage().getName())
                 .setProperty("workspace.home", "C:/github/Workshop/AppBuild")
+                .setProperty("bod", "GroceryOrder")
                 .create();
 
-        Flow.FlowBuilder builder = Flow.builder(new File("C:/github/Transformer/workflow.yaml"));
+        Flow.FlowBuilder builder = Flow.builder(new File("C:/github/Transformer/development-workflow.yaml"));
 
         Flow flow = builder.create();
 
         flow.execute(Flow.callbacks()
-                .add(SessionInfoCallback
-                        .instance()
-                        .printProperties()
-                        .printTaskResult("validate"))
+                        .add(SessionInfoCallback
+                                .instance()
+                                .printProperties()
+                                .printTaskResult("construct"))
 
-                .add(DefaultFileSystemProcessChain
-                        .instance("C:/github/test")
-                        .mkdir("/src/more")
-                        .zip("/xxx", "/www.zip")
-                        .unzip("/www.zip", "YYY/A")
-                        .delete("YYY/A/src")
-                        .copyDir("xxx", "zzz")
-                        .copyFile("www.zip", "zzz/x.zip")
-                )
+                        .add(DefaultFileSystemProcessChain
+                                .instance("C:/github/Workshop/AppBuild/work")
+                                .mkdir("${bod.name}")
+                                .createFile("${bod.name}/xpath-schema.properties", "cmm", true)
+                                .createFile("${bod.name}/xpath-mappings.properties", "xlsx_mapping", true)
+                                .createFile("${bod.name}/xpath-adjustments.properties", "validate", true)
+                        )
 
-                .add(AntTaskChain
-                        .instance("${workspace.home}")
-                        .addTask(JavaTaskProcessors
-                                .xjc("/CMM/BOD/GetGroceryOrder.xsd", "ant/codegen", "soya.framework.application.model")))
         );
 
         System.exit(0);

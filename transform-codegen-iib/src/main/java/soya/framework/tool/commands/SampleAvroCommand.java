@@ -16,7 +16,7 @@ import java.util.Random;
 public class SampleAvroCommand extends SchemaCommand {
 
     @Override
-    protected String render(KnowledgeTree<SchemaTypeSystem, XsNode> tree) {
+    protected String render() {
         Schema schema = XsdToAvsc.fromXmlSchema(tree.origin());
         Object result = new SampleAvroGenerator(schema, new Random(), 0).generate();
         GenericRecord genericRecord = (GenericRecord) result;

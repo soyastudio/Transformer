@@ -9,21 +9,13 @@ import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public abstract class XPathMappingsCommand extends BusinessObjectCommand {
+public abstract class XPathMappingsCommand extends SchemaCommand {
 
     protected Map<String, Mapping> mappings = new LinkedHashMap<>();
 
     @Override
-    protected String execute() throws Exception {
+    protected void loadMappings() throws Exception {
         load(getFile());
-        annotate();
-
-        return render(mappings);
-    }
-
-    protected abstract File getFile();
-
-    protected void annotate() {
     }
 
     protected void load(File file) throws Exception {
@@ -42,7 +34,7 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
         }
     }
 
-    protected abstract String render(Map<String, Mapping> mappings);
+    protected abstract File getFile();
 
     static class Mapping {
         String type;
@@ -55,9 +47,6 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
         String assign;
 
         int arrayDepth;
-
-        Construction construction;
-        Assignment assignment;
 
         MappingError error;
 
@@ -95,20 +84,6 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
             }
         }
 
-        public String toConstruct() {
-            StringBuilder builder = new StringBuilder();
-            if (construction != null) {
-                builder.append(construction);
-            } else if (assignment != null) {
-                builder.append("assign(").append(assignment.value()).append(")");
-            } else if (error != null) {
-                builder.append("value(").append(error.value).append(")")
-                        .append("::").append("error(").append(error.description).append(")");
-            }
-
-            return builder.toString();
-        }
-
         public String toString() {
             StringBuilder builder = new StringBuilder("type(").append(type).append(")")
                     .append("::").append("cardinality(").append(cardinality).append(")");
@@ -138,7 +113,6 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
     }
 
     static class Adjustment {
-
         private String path;
         private String type;
         private String cardinality;
@@ -192,134 +166,6 @@ public abstract class XPathMappingsCommand extends BusinessObjectCommand {
             }
 
             return result;
-        }
-    }
-
-    static class Construction {
-        private Map<String, Array> arrays = new LinkedHashMap<>();
-
-        public Array getArray(String path) {
-            return arrays.get(path);
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder("construct()");
-            arrays.entrySet().forEach(e -> {
-                builder.append("::").append(e.getValue().toString());
-            });
-            return builder.toString();
-        }
-    }
-
-    static class Array {
-        private static int count;
-        private static Set<String> vars = new HashSet<>();
-        private static Map<ArrayKey, Array> created = new LinkedHashMap<>();
-
-        private final String id;
-        private final String targetPath;
-        private final String sourcePath;
-
-        private String variable;
-        private Set<String> children = new LinkedHashSet<>();
-
-        private transient Array parent;
-        private transient Set<KnowledgeTreeNode<XsNode>> childNodes = new LinkedHashSet();
-
-        private Array(ArrayKey arrayKey) {
-            this.sourcePath = arrayKey.sourcePath;
-            this.targetPath = arrayKey.targetPath;
-
-            count++;
-            this.id = "array" + count;
-            this.variable = "_" + id;
-        }
-
-        public void addChild(KnowledgeTreeNode<XsNode> node) {
-            String path = node.getPath();
-            if (targetPath.length() < path.length() && path.startsWith(targetPath)) {
-                List<KnowledgeTreeNode<XsNode>> list = new ArrayList<>();
-                list.add(node);
-
-                KnowledgeTreeNode<XsNode> parent = node.getParent();
-                while (!targetPath.equals(parent.getPath())) {
-                    list.add(0, parent);
-                    parent = parent.getParent();
-                }
-
-                list.forEach(e -> {
-                    if (!children.contains(e.getPath())) {
-                        children.add(e.getPath());
-                        childNodes.add(e);
-                    }
-                });
-            }
-        }
-
-        @Override
-        public String toString() {
-            if (parent == null) {
-                return id + "(" + sourcePath + ")";
-
-            } else {
-                String token = parent.variable + sourcePath.substring(parent.sourcePath.length());
-                return id + "(" + token + ")";
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Array)) return false;
-
-            Array array = (Array) o;
-
-            if (!sourcePath.equals(array.sourcePath)) return false;
-            return targetPath.equals(array.targetPath);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = sourcePath.hashCode();
-            result = 31 * result + targetPath.hashCode();
-            return result;
-        }
-    }
-
-    static class ArrayKey {
-
-        private final String targetPath;
-        private final String sourcePath;
-
-        public ArrayKey(String targetPath, String sourcePath) {
-            this.targetPath = targetPath;
-            this.sourcePath = sourcePath;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof ArrayKey)) return false;
-
-            ArrayKey arrayKey = (ArrayKey) o;
-            return sourcePath.equals(arrayKey.sourcePath) && targetPath.equals(arrayKey.targetPath);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = targetPath != null ? targetPath.hashCode() : 0;
-            result = 31 * result + (sourcePath != null ? sourcePath.hashCode() : 0);
-            return result;
-        }
-    }
-
-    static class Assignment {
-        private String variable;
-        private String value;
-
-        public String value() {
-            return variable == null ? value : variable + "." + value;
         }
     }
 

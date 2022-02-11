@@ -6,6 +6,14 @@ public interface ServiceLocator {
 
     class ServiceLocatorException extends RuntimeException {
 
+        public ServiceLocatorException(Class<?> type) {
+            super("Cannot find service of type: " + type.getName());
+        }
+
+
+        public ServiceLocatorException(String message) {
+            super(message);
+        }
     }
 
     static ServiceLocator singletonInstance() {

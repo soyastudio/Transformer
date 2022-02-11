@@ -15,7 +15,7 @@ public class DeprecatedMappingsCommand extends XPathMappingsCommand {
     }
 
     @Override
-    protected String render(Map<String, Mapping> mappings) {
+    protected String render() {
         CodeBuilder builder = CodeBuilder.newInstance();
         mappings.entrySet().forEach(e -> {
             String key = e.getKey();

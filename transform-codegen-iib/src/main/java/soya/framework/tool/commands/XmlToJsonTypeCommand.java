@@ -13,7 +13,7 @@ import java.util.Locale;
 public class XmlToJsonTypeCommand extends SchemaCommand {
 
     @Override
-    protected String render(KnowledgeTree<SchemaTypeSystem, XsNode> tree) {
+    protected String render() {
         CodeBuilder codeBuilder = CodeBuilder.newInstance();
         render(tree.root(), codeBuilder);
 

@@ -10,7 +10,7 @@ import soya.framework.transform.schema.xs.XsNode;
 public class XsdToAvscCommand extends SchemaCommand {
 
     @Override
-    protected String render(KnowledgeTree<SchemaTypeSystem, XsNode> tree) {
+    protected String render() {
         return XsdToAvsc.fromXmlSchema(tree.origin()).toString(true);
     }
 }
