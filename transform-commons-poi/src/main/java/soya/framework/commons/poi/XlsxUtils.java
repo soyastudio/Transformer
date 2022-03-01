@@ -1,11 +1,12 @@
 package soya.framework.commons.poi;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -16,16 +17,6 @@ import java.util.*;
 public class XlsxUtils {
 
     public static final String DEFAULT_START_TOKEN = "#";
-
-    public static void main(String[] args) throws Exception{
-        File xlsx = new File("C:\\github\\Workshop\\AppBuild\\BusinessObjects\\AirMilePoints\\requirement\\AirMilesPoints_OCRP _to_EDISCanonical_Mapping_v1.1.4.xlsx");
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String[] columns = {"Target", "DataType", "Cardinality", "Mapping", "Source", "Version"};
-
-        List<Map<String, String>> data = extract(xlsx, "Map-SUMMARY_CMM", DEFAULT_START_TOKEN, columns);
-        System.out.println(gson.toJson(data));
-    }
 
     public static List<Map<String, String>> extract(File file, String sheetName, String startToken, String[] columnNames) throws IOException {
         List<Map<String, String>> list = new ArrayList<>();
@@ -82,15 +73,23 @@ public class XlsxUtils {
                         }
 
                         Cell cell = currentRow.getCell(columnIndex[k]);
-                        if(cell != null) {
-                            String value = cell.getStringCellValue();
+                        if (cell != null) {
+                            String value = "";
+                            if (CellType.STRING.equals(cell.getCellType())) {
+                                value = cell.getStringCellValue();
+
+                            } else if (CellType.NUMERIC.equals(cell.getCellType())) {
+                                value = "" + cell.getNumericCellValue();
+
+                            }
+
                             while (value.contains("\n")) {
                                 value = value.replace("\n", " ");
                             }
 
                             XSSFCellStyle style = (XSSFCellStyle) currentRow.getCell(columnIndex[0]).getCellStyle();
-                            if(style != null && style.getFont().getStrikeout()) {
-                                if(k == 0) {
+                            if (style != null && style.getFont().getStrikeout()) {
+                                if (k == 0) {
                                     value = "# " + value;
                                 }
                             }
@@ -133,7 +132,7 @@ public class XlsxUtils {
         return list;
     }
 
-    public static List<DynaBean> extract(File file, String sheetName, String startToken, DynaClass type) throws IOException{
+    public static List<DynaBean> extract(File file, String sheetName, String startToken, DynaClass type) throws IOException {
         List<DynaBean> list = new ArrayList<>();
 
         DynaProperty[] properties = type.getDynaProperties();

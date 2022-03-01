@@ -47,10 +47,10 @@ public class KafkaFlowRunner {
 
         builder.addTask(Flow.Task.builder(PubAndSubCommand.class)
                 .name("PubAndSub")
-                .setOption("e", "dev")
-                .setOption("m", "C:/github/test/details.json")
-                .setOption("p", "OCRP_C02_EDIS_ALASKA_DETAILS_OUTBOUND")
-                .setOption("c", "ESED_C01_AirMilePoints")
+                .setOption("e", "QA")
+                .setOption("m", "C:/github/test/ECHO_Source_JSON_completed.json")
+                .setOption("p", "OSMS-EMOM_C02_ORDER")
+                .setOption("c", "ESED_C01_GroceryOrder_JSON")
                 .create());
 
         Flow flow = builder.create();

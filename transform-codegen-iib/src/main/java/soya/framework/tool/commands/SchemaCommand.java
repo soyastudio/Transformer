@@ -13,19 +13,8 @@ public abstract class SchemaCommand extends BusinessObjectCommand {
     @Override
     public String execute() throws Exception {
         loadXmlSchema();
-        loadMappings();
-        annotate();
-
+        process();
         return render();
-
-    }
-
-    protected void loadMappings() throws Exception {
-
-    }
-
-    protected void annotate() {
-
     }
 
     private void loadXmlSchema() {
@@ -35,6 +24,10 @@ public abstract class SchemaCommand extends BusinessObjectCommand {
         }
 
         this.tree = XsUtils.createKnowledgeTree(file);
+    }
+
+    protected void process() throws Exception {
+
     }
 
     protected abstract String render();

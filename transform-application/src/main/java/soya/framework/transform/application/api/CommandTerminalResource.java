@@ -9,9 +9,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Component
-@Path("/terminal")
-@Api(value = "Command Terminal Service")
+//@Component
+//@Path("/terminal")
+//@Api(value = "Command Terminal Service")
 public class CommandTerminalResource {
 
     @Autowired

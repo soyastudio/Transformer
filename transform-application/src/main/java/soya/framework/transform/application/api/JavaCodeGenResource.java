@@ -13,9 +13,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Component
-@Path("/java")
-@Api(value = "Java Code Generation Service")
+//@Component
+//@Path("/java")
+//@Api(value = "Java Code Generation Service")
 public class JavaCodeGenResource extends CommandDispatcher {
     public JavaCodeGenResource(@Autowired
                                @Qualifier("JavaCodegenCommandExecutor")

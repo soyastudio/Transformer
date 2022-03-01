@@ -6,12 +6,11 @@ import soya.framework.commons.cli.CommandOption;
 import soya.framework.commons.cli.Resources;
 import soya.framework.kafka.KafkaUtils;
 
-@Command(name = "pub-sub", uri = "kafka://pub-and-sub")
+@Command(name = "pub-and-sub", uri = "kafka://pub-and-sub")
 public class PubAndSubCommand extends AbstractProduceCommand {
 
     @CommandOption(option = "c", longOption = "consumeTopic", required = true)
     protected String consumeTopic;
-
 
     @Override
     public String call() throws Exception {

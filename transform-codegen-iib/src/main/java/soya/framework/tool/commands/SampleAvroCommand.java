@@ -12,7 +12,7 @@ import soya.framework.transform.schema.xs.XsNode;
 
 import java.util.Random;
 
-@Command(name = "sample-avro", uri = "bod://sample-avro")
+@Command(name = "bod-sample-avro", uri = "bod://sample-avro")
 public class SampleAvroCommand extends SchemaCommand {
 
     @Override

@@ -37,13 +37,13 @@ public class CommandExecutorConfiguration {
                 .create();
     }
 
-    @Bean("JavaCodegenCommandExecutor")
+    /*@Bean("JavaCodegenCommandExecutor")
     CommandExecutor javaCodegenCommandExecutor(ExecutorService executorService) {
         return CommandExecutor.builder(JavaCodegenCommand.class)
                 .scan(JavaCodegenCommand.class.getPackage().getName())
                 .setExecutorService(executorService)
                 .create();
-    }
+    }*/
 
     @Bean("BusinessObjectCommandExecutor")
     CommandExecutor businessObjectCommandExecutor(ExecutorService executorService) {

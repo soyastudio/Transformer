@@ -9,10 +9,7 @@ import java.util.Map;
 @Command(name = "deprecated-mappings", uri = "bod://deprecated-mappings")
 public class DeprecatedMappingsCommand extends XPathMappingsCommand {
 
-    @Override
-    protected File getFile() {
-        return new File(workDir, XPATH_MAPPINGS_FILE);
-    }
+
 
     @Override
     protected String render() {
@@ -25,5 +22,10 @@ public class DeprecatedMappingsCommand extends XPathMappingsCommand {
         });
 
         return builder.toString();
+    }
+
+    @Override
+    protected void annotate() throws Exception {
+
     }
 }

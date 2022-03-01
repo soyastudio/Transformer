@@ -3,15 +3,8 @@ package soya.framework.tool.commands;
 import soya.framework.commons.cli.Command;
 import soya.framework.transform.schema.xs.XsNode;
 
-import java.io.File;
-
-@Command(name = "bod-mapping-validate", uri = "bod://validate")
-public class XPathMappingValidateCommand extends XPathMappingsCommand {
-
-    @Override
-    protected File getFile() {
-        return new File(workDir, XPATH_MAPPINGS_FILE);
-    }
+@Command(name = "bod-mappings-validate", uri = "bod://mappings-validate")
+public class XPathMappingsValidator extends XPathMappingsCommand {
 
     @Override
     protected String render() {
@@ -39,6 +32,7 @@ public class XPathMappingValidateCommand extends XPathMappingsCommand {
     }
 
     private String validate(Mapping mapping, XsNode node) {
+
         String type = XsUtils.type(node);
         String cardinality = XsUtils.cardinality(node);
 
@@ -65,5 +59,8 @@ public class XPathMappingValidateCommand extends XPathMappingsCommand {
         }
     }
 
+    @Override
+    protected void annotate() throws Exception {
 
+    }
 }

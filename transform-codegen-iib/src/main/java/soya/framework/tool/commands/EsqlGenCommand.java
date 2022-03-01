@@ -1,40 +1,28 @@
 package soya.framework.tool.commands;
 
-import org.apache.xmlbeans.SchemaTypeSystem;
 import soya.framework.commons.cli.Command;
-import soya.framework.commons.cli.CommandOption;
 import soya.framework.commons.util.CodeBuilder;
-import soya.framework.transform.schema.KnowledgeTree;
 import soya.framework.transform.schema.KnowledgeTreeNode;
 import soya.framework.transform.schema.xs.XsNode;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.StringTokenizer;
 
-@Command(name = "esql", uri = "bod://esql")
-public class EsqlGenCommand extends XPathMappingsCommand {
+@Command(name = "bod-esql", uri = "bod://esql")
+public class EsqlGenCommand extends ConstructCommand {
 
-    @CommandOption(option = "k", longOption = "package", required = true)
-    protected String brokerSchema;
+    private String inputRootVariable = "_inputRootNode";
+    private String inputRootReference = "InputRoot.JSON.Data";
 
-    @CommandOption(option = "m", longOption = "module", required = true)
-    protected String module;
-
-    @CommandOption(option = "c", longOption = "construct", required = true)
-    protected String construction;
-
+    private String outputRootName;
+    private String outputRootVariable;
 
     @Override
-    protected String render()  {
-        String inputRootVariable = "_inputRoot";
-        String inputRootReference = "InputRoot.JSON.Data";
+    protected String render() {
+        String brokerSchema = bod.getFlows().get(0).getPackageName();
+        String module = bod.getFlows().get(0).getTransformer() + "_Compute";
 
-        String outputRootVariable = "xmlDocRoot";
-        String outputRootName = tree.root().getName();
-
+        outputRootName = tree.root().getName();
+        outputRootVariable = outputRootName + "_";
 
         CodeBuilder builder = CodeBuilder.newInstance();
         if (brokerSchema != null && brokerSchema.trim().length() > 0) {
@@ -46,7 +34,7 @@ public class EsqlGenCommand extends XPathMappingsCommand {
         // UDP:
         builder.appendLine("-- Declare UDPs", 1);
         builder.appendLine("DECLARE VERSION_ID EXTERNAL CHARACTER '1.0.0';", 1);
-        builder.appendLine("SYSTEM_ENVIRONMENT_CODE EXTERNAL CHARACTER 'PROD';", 1);
+        builder.appendLine("DECLARE SYSTEM_ENVIRONMENT_CODE EXTERNAL CHARACTER 'PROD';", 1);
 
         builder.appendLine();
 
@@ -63,31 +51,25 @@ public class EsqlGenCommand extends XPathMappingsCommand {
 
         // Declare Output Domain
         builder.appendLine("-- Declare Output Message Root", 2);
-        builder.append("CREATE LASTCHILD OF OutputRoot DOMAIN ", 2).append("'XMLNSC'").appendLine(";");
+        builder.append("CREATE LASTCHILD OF OutputRoot DOMAIN ", 2).append("'XMLNSC'").appendLine(";").appendLine();
+
         builder.append("DECLARE ", 2).append(outputRootVariable).append(" REFERENCE TO OutputRoot.XMLNSC.").append(outputRootName).appendLine(";");
         builder.append("CREATE LASTCHILD OF OutputRoot.", 2).append("XMLNSC AS ").append(outputRootVariable).append(" TYPE XMLNSC.Folder NAME '").append(outputRootName).append("'").appendLine(";");
         builder.append("SET OutputRoot.XMLNSC.", 2).append(outputRootName).appendLine(".(XMLNSC.NamespaceDecl)xmlns:Abs=Abs;");
         builder.appendLine();
 
         //print node:
-        printNode(tree.root(), builder, 2);
+        tree.root().getChildren().forEach(e -> {
+            printNode(e, builder, 2);
+        });
 
         // closing
-        builder.appendLine("RETURN TRUE;",  2);
+        builder.appendLine("RETURN TRUE;", 2);
         builder.appendLine("END;", 1);
         builder.appendLine();
         builder.appendLine("END MODULE;");
 
         return builder.toString();
-    }
-
-    @Override
-    protected File getFile() {
-        return new File(workDir, construction);
-    }
-
-     protected String render(Map<String, Mapping> mappings) {
-        return null;
     }
 
     private void declareNamespace(CodeBuilder builder) {
@@ -103,50 +85,14 @@ public class EsqlGenCommand extends XPathMappingsCommand {
 
         builder.append("BEGIN").append("\n");
     }
-/*
-
-    private void declareInputRoot(CodeBuilder builder) {
-        builder.appendLine("-- Declare Input Message Root", 2);
-        builder.appendLine("DECLARE " + inputRootVariable + " REFERENCE TO " + inputRootReference + ";", 2);
-        builder.appendLine();
-    }
-*/
 
     private void printNode(KnowledgeTreeNode<XsNode> node, CodeBuilder builder, int indent) {
-
-    }
-
-    private List<String> getAllPath(String path, String base) {
-        List<String> list = new ArrayList();
-        list.add(path);
-        String token = path;
-        while (!token.equals(base)) {
-            token = token.substring(0, token.lastIndexOf("/"));
-            list.add(0, token);
-        }
-
-        return list;
-    }
-
-    private String decode(String contents) {
-        return new String(Base64.getDecoder().decode(contents.getBytes()));
-    }
-
-/*
-
-    private void printNode(KnowledgeTreeNode<XsNode> node, StringBuilder builder, int indent) {
-        if (node.getAnnotation(NAMESPACE_CONSTRUCTION) != null) {
-            Construction construction = node.getAnnotation(NAMESPACE_CONSTRUCTION, Construction.class);
-            if (construction.getFunctions().size() == 0) {
-                printSimpleFolder(node, builder, indent);
-
-            } else {
-                construction.getFunctions().forEach(e -> {
-                    printFunction(e, node, builder, indent);
-                });
+        if (node.getAnnotation(CONSTRUCTION_NAMESPACE) != null) {
+            if (node.getParent() != null) {
+                printConstruction(node, builder, indent);
             }
 
-        } else if (node.getAnnotation(NAMESPACE_ASSIGNMENT) != null) {
+        } else if (node.getAnnotation(ASSIGNMENT_NAMESPACE) != null) {
             printAssignment(node, builder, indent);
 
         } else {
@@ -154,7 +100,222 @@ public class EsqlGenCommand extends XPathMappingsCommand {
 
         }
     }
-*/
+
+    private void printAssignment(KnowledgeTreeNode<XsNode> node, CodeBuilder builder, int indent) {
+
+        Assignment assignment = (Assignment) node.getAnnotation(ASSIGNMENT_NAMESPACE);
+        Construction construction = (Construction) node.getParent().getAnnotation(CONSTRUCTION_NAMESPACE);
+
+        builder.append("-- ", indent).appendLine(node.getPath());
+
+        String type = "(XMLNSC.Field)";
+        String name = node.getName();
+        String assign = assignment.getAssign();
+
+        if (assign.endsWith("[*]")) {
+            builder.append("-- SET ", indent)
+                    .append(construction.getVariable()).append(".").append(type).append(name)
+                    .append(" = ")
+                    .append(assign).appendLine(";")
+                    .appendLine();
+
+        } else {
+            if (assign.startsWith("$.")) {
+                assign = inputRootVariable + assign.substring(1);
+
+            } else if ("???".equals(assign)) {
+                assign = "'???'";
+
+            }
+
+            if (XsNode.XsNodeType.Attribute.equals(node.origin().getNodeType())) {
+                type = "(XMLNSC.Attribute)";
+                if (name.startsWith("@")) {
+                    name = name.substring(1);
+                }
+            }
+
+            if (node.origin().getName().getNamespaceURI() != null && node.origin().getName().getNamespaceURI().trim().length() > 0) {
+                type = type + "Abs:";
+            }
+
+            builder.append("SET ", indent)
+                    .append(construction.getVariable()).append(".").append(type).append(name)
+                    .append(" = ")
+                    .append(assign).appendLine(";")
+                    .appendLine();
+        }
+    }
+
+    private void printConstruction(KnowledgeTreeNode<XsNode> node, CodeBuilder builder, int indent) {
+        Construction construction = (Construction) node.getAnnotation(CONSTRUCTION_NAMESPACE);
+        if (construction.arrays().size() > 0) {
+            int i = 0;
+            for (Array arr : construction.arrays()) {
+                if (i > 0) {
+                    arr.addIndex(i);
+                }
+                printArray(arr, builder, indent);
+                i++;
+            }
+
+        } else {
+            Construction parent = (Construction) node.getParent().getAnnotation(CONSTRUCTION_NAMESPACE);
+            String name = node.getName();
+            if (node.origin().getName().getNamespaceURI().trim().length() > 0) {
+                name = "Abs:" + name;
+            }
+
+            builder.append("-- ", indent).appendLine(node.getPath());
+            builder.append("DECLARE ", indent)
+                    .append(construction.getVariable())
+                    .append(" REFERENCE TO ")
+                    .append(parent.getVariable()).appendLine(";");
+
+            builder.append("CREATE LASTCHILD OF ", indent)
+                    .append(parent.getVariable())
+                    .append(" AS ")
+                    .append(construction.getVariable())
+                    .append(" TYPE XMLNSC.Folder NAME '")
+                    .append(name)
+                    .appendLine("';")
+                    .appendLine();
+
+            node.getChildren().forEach(e -> {
+                printNode(e, builder, indent + 1);
+            });
+
+        }
+
+    }
+
+    private void printArray(Array array, CodeBuilder builder, int indent) {
+        KnowledgeTreeNode<XsNode> node = tree.get(array.getTargetPath());
+        Construction construction = (Construction) node.getAnnotation(CONSTRUCTION_NAMESPACE);
+        Construction parent = (Construction) node.getParent().getAnnotation(CONSTRUCTION_NAMESPACE);
+        String name = node.getName();
+        if (node.origin().getName().getNamespaceURI().trim().length() > 0) {
+            name = "Abs:" + name;
+        }
+
+        builder.append("-- LOOP ", indent).append(array.getSourcePath()).append(" TO ").append(node.getPath()).appendLine();
+        builder.append("DECLARE ", indent).append(array.getVariable()).append(" REFERENCE TO ").append(array.getEvaluation()).appendLine(";");
+        builder.append(array.getName(), indent).append(" : WHILE LASTMOVE(").append(array.getVariable()).appendLine(") DO").appendLine();
+
+        builder.append("-- ", indent + 1).appendLine(node.getPath());
+        builder.append("DECLARE ", indent + 1)
+                .append(construction.getVariable())
+                .append(" REFERENCE TO ")
+                .append(parent.getVariable()).appendLine(";");
+
+        builder.append("CREATE LASTCHILD OF ", indent + 1)
+                .append(parent.getVariable())
+                .append(" AS ")
+                .append(construction.getVariable())
+                .append(" TYPE XMLNSC.Folder NAME '")
+                .append(name)
+                .appendLine("';")
+                .appendLine();
+
+        int level = level(node.getPath());
+
+        array.getChildren().entrySet().forEach(e -> {
+            String path = e.getKey();
+            KnowledgeTreeNode<XsNode> childNode = tree.get(path);
+            KnowledgeTreeNode<XsNode> parentNode = childNode.getParent();
+            int diff = level(path) - level;
+
+            String[] src = e.getValue();
+            if (src.length == 0) {
+                // Folder:
+                String _name = childNode.getName();
+                if (childNode.origin().getName().getNamespaceURI().trim().length() > 0) {
+                    _name = "Abs:" + _name;
+                }
+
+                Construction sub = (Construction) childNode.getAnnotation(CONSTRUCTION_NAMESPACE);
+                Construction sup = (Construction) parentNode.getAnnotation(CONSTRUCTION_NAMESPACE);
+                builder.append("-- ", indent + diff + 1).appendLine(childNode.getPath());
+                builder.append("DECLARE ", indent + diff + 1)
+                        .append(sub.getVariable())
+                        .append(" REFERENCE TO ")
+                        .append(sup.getVariable()).appendLine(";");
+                builder.append("CREATE LASTCHILD OF ", indent + diff + 1)
+                        .append(sup.getVariable())
+                        .append(" AS ")
+                        .append(sub.getVariable())
+                        .append(" TYPE XMLNSC.Folder NAME '")
+                        .append(_name)
+                        .appendLine("';")
+                        .appendLine();
+
+            } else {
+                int index = 0;
+                for (String v : src) {
+                    if (!v.endsWith("[*]")) {
+                        String _type = "(XMLNSC.Field)";
+                        String _name = childNode.getName();
+
+                        if (XsNode.XsNodeType.Attribute.equals(childNode.origin().getNodeType())) {
+                            _type = "(XMLNSC.Attribute)";
+                            if (_name.startsWith("@")) {
+                                _name = _name.substring(1);
+                            }
+                        }
+
+                        if (childNode.origin().getName().getNamespaceURI() != null && node.origin().getName().getNamespaceURI().trim().length() > 0) {
+                            _type = _type + "Abs:";
+                        }
+
+                        String eval = v;
+                        if (eval.contains("[*]")) {
+                            String arrayMapping = eval.substring(0, eval.lastIndexOf("[*]") + 3);
+                            Array mappedArray = arrayMap.get(arrayMapping);
+                            eval = mappedArray.getVariable() + v.substring(mappedArray.getSourcePath().length());
+
+                        } else if (eval.startsWith("$.")) {
+                            eval = "_inputRootNode" + eval.substring(1);
+
+                        } else if ("???".equals(eval)) {
+                            eval = "'???'";
+                        }
+
+                        builder.append("-- ", indent + diff + 1).appendLine(childNode.getPath());
+                        builder.append("SET ", indent + diff + 1)
+                                .append(construction.getVariable()).append(".").append(_type).append(_name)
+                                .append(" = ")
+                                .append(eval).appendLine(";")
+                                .appendLine();
+
+                    } else if (arrayMap.containsKey(v)) {
+                        Array subArray = arrayMap.get(v);
+                        if (index > 0) {
+                            subArray.addIndex(index);
+                        }
+                        printArray(subArray, builder, indent + diff + 1);
+
+                    } else {
+                        System.out.println("=============== " + v);
+
+                    }
+
+                    index++;
+                }
+
+            }
+        });
+
+        builder.append("MOVE ", indent).append(array.getVariable()).append(" NEXTSIBLING;").appendLine();
+        builder.append("END WHILE ", indent).append(array.getName()).appendLine(";");
+        builder.appendLine("-- END LOOP", indent).appendLine();
+
+    }
+
+    private static int level(String path) {
+        StringTokenizer tokenizer = new StringTokenizer(path, "/");
+        return tokenizer.countTokens();
+    }
+
 
 
 /*
@@ -625,8 +786,6 @@ public class EsqlGenCommand extends XPathMappingsCommand {
 
     }
 */
-
-
 
 
 }

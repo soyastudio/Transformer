@@ -15,11 +15,6 @@ public class FilterMappingsCommand extends XPathMappingsCommand {
     protected String expression;
 
     @Override
-    protected File getFile() {
-        return new File(workDir, XPATH_MAPPINGS_FILE);
-    }
-
-    @Override
     protected String render() {
         String token = expression == null? "::" : expression.toUpperCase(Locale.ROOT);
         CodeBuilder builder = CodeBuilder.newInstance();
@@ -31,5 +26,10 @@ public class FilterMappingsCommand extends XPathMappingsCommand {
 
         });
         return builder.toString();
+    }
+
+    @Override
+    protected void annotate() throws Exception {
+
     }
 }

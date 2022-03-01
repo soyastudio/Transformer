@@ -36,18 +36,24 @@ public class FlowRunner {
         Flow flow = builder.create();
 
         flow.execute(Flow.callbacks()
-                        .add(SessionInfoCallback
-                                .instance()
-                                .printProperties()
-                                .printTaskResult("construct"))
+                .add(SessionInfoCallback
+                        .instance()
+                        .printProperties()
+                        //.printTaskResult("validate")
+                        //.printTaskResult("esql")
+                        .printTaskResult("construct")
+                        //.printTaskResult("arrays")
+                )
 
-                        .add(DefaultFileSystemProcessChain
-                                .instance("C:/github/Workshop/AppBuild/work")
-                                .mkdir("${bod.name}")
-                                .createFile("${bod.name}/xpath-schema.properties", "cmm", true)
-                                .createFile("${bod.name}/xpath-mappings.properties", "xlsx_mapping", true)
-                                .createFile("${bod.name}/xpath-adjustments.properties", "validate", true)
-                        )
+                .add(DefaultFileSystemProcessChain
+                        .instance("C:/github/Workshop/AppBuild/work")
+                        .mkdir("${bod.name}")
+                        .createFile("${bod.name}/xpath-schema.properties", "cmm", true)
+                        .createFile("${bod.name}/xpath-mappings.properties", "xlsx_mapping", true)
+                        .createFile("${bod.name}/xpath-adjustments.properties", "validate", true)
+                        .createFile("${bod.name}/xpath-construct.properties", "construct", true)
+                        .createFile("${bod.name}/iib-esql.esql", "esql", true)
+                )
 
         );
 

@@ -14,7 +14,7 @@ import soya.framework.commons.cli.CommandExecutor;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
-@Service
+//@Service
 public class CommandService {
 
     @Autowired

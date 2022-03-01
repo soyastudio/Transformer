@@ -1,6 +1,8 @@
 package soya.framework.commons.cli;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public abstract class CommandDispatcher {
 
@@ -8,6 +10,9 @@ public abstract class CommandDispatcher {
 
     public CommandDispatcher(CommandExecutor delegate) {
         _executor = delegate;
+        if(delegate == null) {
+            throw new IllegalArgumentException("CommandExecutor cannot be null!");
+        }
     }
 
     protected String _help(String cmd) {
@@ -15,28 +20,22 @@ public abstract class CommandDispatcher {
     }
 
     protected String _dispatch(String methodName, Object[] args) throws Exception {
-        CommandExecutor commandExecutor = null;
         Field[] fields = getClass().getDeclaredFields();
         for (Field field : fields) {
             if (CommandExecutor.class.isAssignableFrom(field.getType())) {
                 field.setAccessible(true);
-                CommandExecutor delegate = (CommandExecutor) field.get(this);
-                if(dispatchable(methodName, delegate)) {
-                    commandExecutor = delegate;
-                    break;
-                }
             }
         }
 
-        if(commandExecutor == null) {
-            throw new IllegalArgumentException("Can..........");
-        }
-
-        return CommandExecutor.execute(getClass(), methodName, args, commandExecutor);
+        return CommandExecutor.execute(getClass(), methodName, args, _executor);
     }
 
     protected String _execute(String commandline) throws Exception {
         return _executor.execute(commandline);
+    }
+
+    protected String encodeMessage(String message) {
+        return Base64.getEncoder().encodeToString(message.getBytes());
     }
 
     private boolean dispatchable(String methodName, CommandExecutor delegate) {

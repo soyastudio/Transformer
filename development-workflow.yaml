@@ -63,6 +63,13 @@ tasks:
       b: ${bod.name}
       c: xpath-mappings.properties
 
+  - task: arrays
+    uri: bod://arrays
+    options:
+      r: ${workspace.home}
+      b: ${bod.name}
+      c: xpath-mappings.properties
+
   - task: esql
     uri: bod://esql
     options:

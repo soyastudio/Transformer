@@ -1,22 +1,22 @@
 package soya.framework.commons.cli;
 
 import com.google.gson.JsonParser;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.xml.sax.InputSource;
 import soya.framework.commons.io.IOUtils;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 public class Resources {
 
@@ -24,7 +24,7 @@ public class Resources {
     private static final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
     public enum ResourceType {
-        URL, FILE, PLAIN;
+        URL, FILE, BASE64, GZIPPED, PLAIN;
     }
 
     private Resources() {
@@ -40,6 +40,9 @@ public class Resources {
             case URL:
                 return fromUrl(source);
 
+            case BASE64:
+                return decode(source);
+
             default:
                 return source;
         }
@@ -53,12 +56,39 @@ public class Resources {
         return IOUtils.toString(new URL(url).openStream());
     }
 
+    protected static String decode(String src) throws Exception {
+        byte[] decoded = Base64.decodeBase64(src);
+        if(isGZipped(decoded)) {
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decoded)) {
+                try (GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream)) {
+                    try (InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8)) {
+                        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                            StringBuilder output = new StringBuilder();
+                            String line;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                output.append(line);
+                            }
+                            return output.toString();
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to unzip content", e);
+            }
+        } else {
+            return new String(decoded);
+        }
+    }
+
     public static ResourceType guessType(String source) {
         if (isFile(source)) {
             return ResourceType.FILE;
 
         } else if (isURL(source)) {
             return ResourceType.URL;
+
+        } else if (isBas64Encoded(source)) {
+            return ResourceType.BASE64;
 
         } else {
             return ResourceType.PLAIN;
@@ -81,7 +111,7 @@ public class Resources {
 
     public static boolean isJson(String source) {
         String token = source.trim();
-        if(token.startsWith("[") && token.endsWith("]")
+        if (token.startsWith("[") && token.endsWith("]")
                 || token.startsWith("{") && token.endsWith("}")) {
             try {
                 JsonParser.parseString(source);
@@ -107,8 +137,18 @@ public class Resources {
     }
 
     public static boolean isBas64Encoded(String source) {
-        // TODO
-        return false;
+        return Base64.isBase64(source);
+    }
+
+    public static boolean isGZipped(String source) {
+        byte[] compressed = source.getBytes(StandardCharsets.UTF_8);
+        return (compressed[0] == (byte) (GZIPInputStream.GZIP_MAGIC))
+                && (compressed[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8));
+    }
+
+    public static boolean isGZipped(byte[] compressed) {
+         return (compressed[0] == (byte) (GZIPInputStream.GZIP_MAGIC))
+                && (compressed[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8));
     }
 
     public static String getFileExtension(String filename) {
@@ -118,7 +158,7 @@ public class Resources {
     public static void compile(Properties properties) {
 
         int num = properties.size();
-        while(true) {
+        while (true) {
             Properties values = new Properties();
             properties.entrySet().forEach(e -> {
                 String v = (String) e.getValue();
@@ -127,7 +167,7 @@ public class Resources {
                 }
             });
 
-            if(values.size() == num) {
+            if (values.size() == num) {
                 break;
 
             } else {
@@ -147,7 +187,7 @@ public class Resources {
 
                     value = StrSubstitutor.replace(value, values);
 
-                    if(value.contains("${")) {
+                    if (value.contains("${")) {
                         value = StrSubstitutor.replace(value, System.getProperties());
                     }
 
@@ -168,10 +208,10 @@ public class Resources {
             while (matcher.find()) {
                 String token = matcher.group(1);
                 String value = token;
-                if(properties.getProperty(token) != null) {
+                if (properties.getProperty(token) != null) {
                     value = properties.getProperty(token);
 
-                } else if(System.getProperty(token) != null) {
+                } else if (System.getProperty(token) != null) {
                     value = System.getProperty(token);
                 }
                 matcher.appendReplacement(buffer, value);
